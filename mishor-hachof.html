@@ -213,6 +213,50 @@
 
   </div>
 
+  <div class="section">
+    <div class="section-title">📝 שאלת בגרות אמיתית</div>
+    <div class="section-sub">שאלות מתוך אוסף שאלות בגרות בתיירות (חומרי המורה) — לא שאלות שהומצאו, אלא שאלות שנכתבו בסגנון הבגרות בפועל</div>
+
+    <div class="bagrut-real">
+      <span class="bagrut-badge">🎓 שאלת בגרות אמיתית · מקור: אוסף שאלות בגרות — מישור החוף</span>
+      <p><strong>שאלה:</strong></p>
+      <p>א. תארו את הנוף האופייני למישור החוף המרכזי והדרומי.</p>
+      <p>ב. ציינו שמות של שני אתרי תיירות מיוחדים בשפלת החוף (מישור החוף הדרומי) והסבירו מה מייחד אותם.</p>
+      <p>ג. צפו בשני הסרטונים על אשקלון ועל נתניה, וציינו אילו סוגים של "תיירות לשם הנאה" מוצעים בכל אחת מהערים, והסבירו מה מייחד את אשקלון לעומת נתניה מבחינת ההיצע התיירותי שלה:<br>
+      <a href="https://www.youtube.com/watch?v=VRzBZadmjz4" target="_blank" rel="noopener">סרטון על אשקלון</a> ·
+      <a href="https://www.youtube.com/watch?v=CLeJ382ggYw" target="_blank" rel="noopener">סרטון על נתניה</a></p>
+      <details class="qa" style="margin-top:10px;">
+        <summary>הצגת כיוון לתשובה</summary>
+        <div class="answer">א. נוף מישורי לחלוטין, חוף צבירה רחב וישר, אדמת חול, ערים גדולות לאורכו. ב. גן לאומי בית גוברין (מערות פעמון ייחודיות) וגן לאומי תל אשקלון (השער הכנעני המקושת הקדום בעולם, בשילוב חוף נופש). ג. יש לצפות בסרטונים ולהשוות בעצמכם בין היצע התיירות של שתי הערים — זו בדיוק המיומנות שנבחנת בשאלה.</div>
+      </details>
+    </div>
+
+    <div class="bagrut-real">
+      <span class="bagrut-badge">🎓 שאלת בגרות אמיתית · מקור: אוסף שאלות בגרות — מישור החוף</span>
+      <p><strong>שאלה:</strong></p>
+      <p>א. ציינו שתי ערים במישור החוף המרכזי והדרומי שנמצאו בהן שרידים ארכיאולוגיים, ותארו שריד אחד מהן.</p>
+      <p>ב. הסבירו מיהם הבהאים וציינו את שמותיהם של שני אתרים קדושים לבהאים בישראל.</p>
+      <p>ג. ציינו שלושה מגורמי המשיכה של העיר תל אביב עבור תיירים.</p>
+      <details class="qa" style="margin-top:10px;">
+        <summary>הצגת כיוון לתשובה</summary>
+        <div class="answer">א. קיסריה — האקוודוקט הרומי; אשקלון — השער הכנעני המקושת. ב. דת שנוסדה בפרס לפני כ-150 שנה ומאמינה באחדות האנושות; הגנים הבהאיים בחיפה וארמון בהג'י בעכו. ג. תרבות ובילוי לילה, מעמד UNESCO של העיר הלבנה, וחוף ים במטרופולין מודרני.</div>
+      </details>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🎯 בוחן ידע — מישור החוף</div>
+    <div class="quiz-box">
+      <p class="quiz-intro">בדקו את עצמכם על החומר שלמדתם באזור זה. סמנו תשובה לכל שאלה ולחצו על "בדוק תשובות" לקבלת ציון ומשוב מיידי.</p>
+      <div id="quizContainer"></div>
+      <div class="quiz-actions">
+        <button id="quizCheckBtn" onclick="checkQuiz()">בדוק תשובות</button>
+        <button id="quizResetBtn" onclick="resetQuiz()" style="background:var(--terracotta);">התחילו מחדש</button>
+        <span id="quizScore" class="quiz-score"></span>
+      </div>
+    </div>
+  </div>
+
   <p class="source-note">מבוסס על מצגת ומחוון "מישור החוף — חזרה לבגרות, מגמת תיירות" מתוך חומרי המורה.</p>
 
 </main>
@@ -220,6 +264,77 @@
 <footer class="site-footer">
   אתר לימוד פרטי למגמת תיירות · כיתה יא׳ · מבוסס על חומרי הוראה שנאספו ונערכו לצורכי חזרה לבגרות
 </footer>
+
+<script>
+const QUIZ_DATA = [
+  { q: 'מהו אורכו הכולל של מישור החוף (מראש הנקרה ועד רצועת עזה)?', opts: ['90 ק"מ', '190 ק"מ', '290 ק"מ', '390 ק"מ'], correct: 1,
+    explain: 'אורך מישור החוף הוא כ-190 ק"מ, ברוחב שבין 4 ק"מ בצפון ל-40 ק"מ בדרום.' },
+  { q: 'איזה סוג חוף אופייני לצפון מישור החוף?', opts: ['חוף צבירה', 'חוף סחיפה', 'חוף אלמוגים', 'חוף ביצתי'], correct: 1,
+    explain: 'בצפון, גלים מכרסמים את רכסי הכורכר ויוצרים חוף סחיפה עם מפרצונים ולוחות גידוד. בדרום, לעומת זאת, החוף הוא חוף צבירה — רחב, ישר וחולי.' },
+  { q: 'באיזו שנה נבנה מסגד אל-ג\'זאר בעכו?', opts: ['1517', '1781', '1948', '2003'], correct: 1,
+    explain: 'מסגד אל-ג\'זאר נבנה ב-1781 על ידי הפאשא אחמד אל-ג\'זאר, ובנייתו כללה עמודי גרניט שהובאו מאיטליה.' },
+  { q: 'מהם שני האתרים הקדושים לבהאים בישראל?', opts: ['הכותל המערבי וקבר רחל', 'הגנים הבהאיים בחיפה וארמון בהג\'י בעכו', 'מסגד אל-אקצא וכנסיית הקבר', 'מצדה וקומראן'], correct: 1,
+    explain: 'הבהאות היא דת שנוסדה בפרס לפני כ-150 שנה. שני אתריה הקדושים בישראל הם הגנים הבהאיים בחיפה (אתר UNESCO) וארמון בהג\'י בעכו, שם קבור מייסד הדת.' },
+  { q: 'באיזו שנה הוכרזה "העיר הלבנה" בתל אביב כאתר מורשת עולמית של UNESCO?', opts: ['1948', '1993', '2003', '2013'], correct: 2,
+    explain: 'ב-2003 הכריז ארגון UNESCO על "העיר הלבנה" בתל אביב — הריכוז הגדול בעולם של מבנים בסגנון הבינלאומי (באוהאוס) — כאתר מורשת עולמי.' },
+  { q: 'מי בנה את העיר קיסריה?', opts: ['שלמה המלך', 'המלך הורדוס', 'הצלבנים', 'העות\'מאנים'], correct: 1,
+    explain: 'קיסריה נבנתה על ידי המלך הורדוס לכבוד הקיסר הרומי, והיא כוללת תיאטרון רומי, אקוודוקט והיפודרום השמורים היטב.' },
+  { q: 'מה הכינוי של גן לאומי בית גוברין-מרשה, שהוכרז אתר מורשת עולמי?', opts: ['"עמק האלה"', '"ארץ אלף המערות"', '"שפלת המלכים"', '"גבעת הזהב"'], correct: 1,
+    explain: 'הגן נקרא "ארץ אלף המערות" בזכות אלפי המערות שנחצבו בקרקע הגירית — ובהן מערות פעמון, קולומבריום ובריכות טבילה.' },
+  { q: 'מהם הגבולות הגיאוגרפיים של מישור החוף הצפוני?', opts: ['בין הכרמל לרצועת עזה', 'בין ראש הנקרה לכרמל', 'בין תל אביב לאשקלון', 'בין הירדן לים התיכון'], correct: 1,
+    explain: 'מישור החוף הצפוני משתרע בין ראש הנקרה בצפון (גבול ישראל-לבנון) לבין הכרמל בדרום, בין הרי הגליל במזרח לים התיכון במערב.' }
+];
+
+function buildQuiz() {
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = QUIZ_DATA.map((item, qi) => `
+    <div class="quiz-q" data-qi="${qi}">
+      <div class="q-title"><span class="q-num">${qi + 1}</span><span>${item.q}</span></div>
+      <div class="options">
+        ${item.opts.map((opt, oi) => `<button type="button" class="opt" data-oi="${oi}" onclick="selectOpt(${qi}, ${oi})">${opt}</button>`).join('')}
+      </div>
+      <div class="q-explain" id="explain-${qi}">${item.explain}</div>
+    </div>
+  `).join('');
+}
+
+let answers = {};
+
+function selectOpt(qi, oi) {
+  answers[qi] = oi;
+  const qDiv = document.querySelector('.quiz-q[data-qi="' + qi + '"]');
+  qDiv.querySelectorAll('.opt').forEach(btn => btn.classList.remove('selected'));
+  qDiv.querySelector('.opt[data-oi="' + oi + '"]').classList.add('selected');
+}
+
+function checkQuiz() {
+  let score = 0;
+  QUIZ_DATA.forEach((item, qi) => {
+    const qDiv = document.querySelector('.quiz-q[data-qi="' + qi + '"]');
+    const buttons = qDiv.querySelectorAll('.opt');
+    buttons.forEach(btn => btn.disabled = true);
+    const chosen = answers[qi];
+    if (chosen === item.correct) score++;
+    buttons.forEach(btn => {
+      const oi = parseInt(btn.dataset.oi, 10);
+      if (oi === item.correct) btn.classList.add('correct');
+      else if (oi === chosen) btn.classList.add('incorrect');
+    });
+    document.getElementById('explain-' + qi).classList.add('show');
+  });
+  const scoreEl = document.getElementById('quizScore');
+  scoreEl.textContent = 'הציון שלכם: ' + score + ' מתוך ' + QUIZ_DATA.length + ' (' + Math.round(100 * score / QUIZ_DATA.length) + '%)';
+  scoreEl.classList.add('show');
+}
+
+function resetQuiz() {
+  answers = {};
+  document.getElementById('quizScore').classList.remove('show');
+  buildQuiz();
+}
+
+buildQuiz();
+</script>
 
 </body>
 </html>
