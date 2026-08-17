@@ -329,6 +329,123 @@ details.qa .answer::before {
   content: "✅ ";
 }
 
+/* ===== Interactive quiz ===== */
+.quiz-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  box-shadow: var(--shadow);
+}
+.quiz-box .quiz-intro {
+  color: var(--ink-soft);
+  font-size: 14px;
+  margin-bottom: 18px;
+}
+.quiz-q {
+  border-top: 1px dashed var(--border);
+  padding: 18px 0;
+}
+.quiz-q:first-of-type { border-top: none; padding-top: 0; }
+.quiz-q .q-title {
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 8px;
+}
+.quiz-q .q-num {
+  flex-shrink: 0;
+  background: var(--teal-dark);
+  color: #fff;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+.quiz-q .options {
+  display: grid;
+  gap: 8px;
+}
+.quiz-q .opt {
+  text-align: right;
+  background: var(--sand-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-family: 'Heebo', sans-serif;
+  font-size: 14px;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.quiz-q .opt:hover { background: #fff; border-color: var(--teal); }
+.quiz-q .opt.selected { border-color: var(--teal); background: #fff; }
+.quiz-q .opt.correct { background: rgba(14,124,123,0.15); border-color: var(--teal-dark); font-weight: 700; }
+.quiz-q .opt.incorrect { background: rgba(193,98,45,0.12); border-color: var(--terracotta); }
+.quiz-q .opt:disabled { cursor: default; }
+.quiz-q .q-explain {
+  margin-top: 10px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  background: var(--sand-2);
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: none;
+}
+.quiz-q .q-explain.show { display: block; }
+.quiz-actions {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.quiz-actions button {
+  background: var(--teal-dark);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 11px 22px;
+  font-family: 'Heebo', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+.quiz-actions button:hover { background: var(--teal); }
+.quiz-score {
+  font-weight: 700;
+  color: var(--teal-dark);
+  font-size: 15px;
+  display: none;
+}
+.quiz-score.show { display: inline-block; }
+
+/* ===== Real bagrut question ===== */
+.bagrut-real {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-right: 4px solid var(--gold);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow);
+}
+.bagrut-real .bagrut-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #8a6a12;
+  background: rgba(201,154,46,0.15);
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-bottom: 10px;
+}
+.bagrut-real p { font-size: 14.5px; margin-bottom: 6px; }
+
 /* ===== Source note ===== */
 .source-note {
   background: var(--sand-2);
