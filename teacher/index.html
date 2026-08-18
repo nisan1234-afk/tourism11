@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>תיירות בגרות — ממשק מורה</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1E90FF">
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&family=Secular+One&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue: #1E90FF; --blue-dark: #0B66C7; --blue-light: #0B66C7;
+      --dark: #FFF8ED; --dark2: #FFFFFF; --dark3: #FFEFD9; --dark4: #F4DFB8;
+      --text: #1B2A3D; --muted: #6C7A8C; --error: #E5484D;
+      --success: #12A66E; --warning: #FF7A3D;
+      --teal: #0E9E8F; --purple: #8B5CF6; --purple-light: #6D28D9;
+      --gold: #F2A900;
+      --font-display: 'Secular One', 'Heebo', sans-serif;
+    }
+    body {
+      font-family: 'Heebo', sans-serif; background: var(--dark); color: var(--text); min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse 900px 500px at 100% -10%, rgba(30,144,255,0.09), transparent 60%),
+        radial-gradient(ellipse 700px 500px at -10% 10%, rgba(255,122,61,0.06), transparent 60%);
+      background-attachment: fixed;
+    }
+    .topbar { background: rgba(255,255,255,0.85); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(27,42,61,0.07); padding: 0 24px; height: 66px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 10px; }
+    .topbar-left { display: flex; align-items: center; gap: 14px; }
+    .brand-mark { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, var(--blue), var(--purple)); display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 3px 12px rgba(30,144,255,0.35); font-size: 17px; }
+    .topbar-logo { font-family: var(--font-display); font-size: 17px; font-weight: 800; letter-spacing: -0.01em; background: linear-gradient(135deg, var(--blue-light), var(--purple-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .topbar-subject { font-size: 11px; font-weight: 700; color: var(--purple-light); text-transform: uppercase; letter-spacing: 0.06em; background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.25); border-radius: 20px; padding: 3px 11px; }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+    .user-name { font-family: var(--font-display); font-size: 13px; font-weight: 700; }
+    .btn-sm { padding: 7px 13px; border-radius: 9px; font-family: 'Heebo', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+    .btn-back { background: transparent; border: 1px solid rgba(27,42,61,0.14); color: var(--muted); }
+    .btn-back:hover { border-color: var(--blue); color: var(--blue-light); }
+    .btn-logout { background: transparent; border: 1px solid rgba(27,42,61,0.14); color: var(--muted); }
+    .btn-logout:hover { border-color: var(--error); color: var(--error); }
+    .btn-primary { background: linear-gradient(135deg, var(--blue), var(--purple)); color: white; box-shadow: 0 3px 12px rgba(30,144,255,0.25); }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-danger { background: rgba(229,72,77,0.12); color: var(--error); border: 1px solid rgba(229,72,77,0.28); }
+    .btn-danger:hover { background: rgba(229,72,77,0.2); }
+
+    .main { max-width: 1100px; margin: 0 auto; padding: 26px 24px; }
+
+    .stats-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
+    .stat-card { position: relative; background: linear-gradient(160deg, var(--dark3), var(--dark2) 80%); border: 1px solid rgba(27,42,61,0.07); border-radius: 14px; padding: 16px 18px; overflow: hidden; }
+    .stat-card::before { content: ''; position: absolute; inset-inline-start: 0; top: 0; bottom: 0; width: 4px; background: linear-gradient(180deg, var(--purple), var(--blue)); }
+    .stat-num { font-family: var(--font-display); font-size: 27px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .stat-label { font-size: 11px; color: var(--muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+    .card { background: linear-gradient(160deg, rgba(255,239,217,0.9), rgba(255,255,255,0.9)); border: 1px solid rgba(27,42,61,0.07); border-radius: 18px; padding: 20px; margin-bottom: 16px; }
+    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+    .card-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; }
+    .search-input { padding: 8px 13px; background: var(--dark3); border: 1px solid rgba(27,42,61,0.08); border-radius: 9px; color: var(--text); font-family: 'Heebo', sans-serif; font-size: 13px; outline: none; width: 200px; direction: rtl; }
+
+    .table-wrap { overflow-x: auto; border-radius: 14px; border: 1px solid rgba(27,42,61,0.07); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { padding: 11px 14px; text-align: right; background: var(--dark3); color: var(--muted); font-weight: 700; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(27,42,61,0.07); white-space: nowrap; }
+    td { padding: 13px 14px; border-bottom: 1px solid rgba(27,42,61,0.04); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(30,144,255,0.03); }
+
+    .prog-wrap { display: flex; align-items: center; gap: 8px; min-width: 140px; }
+    .prog-bar { flex: 1; height: 7px; background: var(--dark4); border-radius: 4px; overflow: hidden; }
+    .prog-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--purple), var(--blue)); box-shadow: 0 0 8px rgba(30,144,255,0.4); }
+    .prog-pct { font-family: var(--font-display); font-size: 11px; font-weight: 700; color: var(--purple-light); min-width: 30px; }
+
+    .unit-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; padding: 3px 9px; border-radius: 20px; background: rgba(14,158,143,0.1); color: var(--teal); font-weight: 600; white-space: nowrap; }
+    .unit-pill.not-done { background: rgba(108,122,140,0.1); color: var(--muted); }
+
+    .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 13px; }
+    .loading-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(27,42,61,0.15); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(27,42,61,0.45); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.show { display: flex; }
+    .modal { background: var(--dark2); border-radius: 18px; padding: 26px; width: 100%; max-width: 380px; }
+    .modal-title { font-family: var(--font-display); font-size: 16px; font-weight: 800; margin-bottom: 16px; }
+    .form-group { margin-bottom: 12px; }
+    label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 5px; }
+    input { width: 100%; padding: 10px 13px; background: var(--dark3); border: 1px solid rgba(27,42,61,0.1); border-radius: 10px; color: var(--text); font-family: 'Heebo', sans-serif; font-size: 13px; outline: none; }
+    .modal-actions { display: flex; gap: 8px; margin-top: 18px; }
+    .modal-actions button { flex: 1; padding: 11px; border-radius: 10px; border: none; font-family: 'Heebo', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; }
+    .btn-modal-cancel { background: var(--dark3); color: var(--muted); }
+    .btn-modal-confirm { background: linear-gradient(135deg, var(--blue), var(--purple)); color: white; }
+    .modal-error { color: var(--error); font-size: 12px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="brand-mark">🎓</div>
+    <div class="topbar-logo">כיתה פלוס</div>
+    <div class="topbar-subject">🎓 תיירות בגרות</div>
+  </div>
+  <div class="topbar-right">
+    <div class="user-name" id="userName">טוען...</div>
+    <button class="btn-sm btn-back" onclick="goBack()">← דשבורד</button>
+    <button class="btn-sm btn-logout" onclick="logout()">יציאה</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num" style="color:var(--blue-light)" id="stTotal">—</div><div class="stat-label">תלמידים</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--purple-light)" id="stAvg">—</div><div class="stat-label">התקדמות ממוצעת</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--success)" id="stDone">—</div><div class="stat-label">סיימו</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--warning)" id="stInProgress">—</div><div class="stat-label">בתהליך</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--muted)" id="stNotStarted">—</div><div class="stat-label">טרם התחילו</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">תלמידים</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input class="search-input" type="text" placeholder="חיפוש..." oninput="filterStudents(this.value)" />
+        <button class="btn-sm btn-primary" onclick="openAddModal()">+ הוסף תלמיד/ה</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>שם</th>
+            <th>מייל</th>
+            <th>כיתה</th>
+            <th>התקדמות</th>
+            <th>יחידות</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="studentsBody">
+          <tr><td colspan="6" class="empty-state"><span class="loading-spinner"></span> טוען...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-title">הוספת תלמיד/ה</div>
+    <div class="form-group"><label>שם מלא</label><input type="text" id="stName" placeholder="שם פרטי ושם משפחה" /></div>
+    <div class="form-group"><label>מייל (חשבון גוגל)</label><input type="email" id="stEmail" placeholder="example@gmail.com" /></div>
+    <div class="form-group"><label>כיתה (אופציונלי)</label><input type="text" id="stClass" placeholder="לדוגמה: יא'3" /></div>
+    <div class="modal-error" id="addModalError"></div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="hideModal()">ביטול</button>
+      <button class="btn-modal-confirm" onclick="submitAddStudent()">הוספה</button>
+    </div>
+  </div>
+</div>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function(){});
+}
+const HUB_URL  = 'https://nisan1234-afk.github.io/';
+const API_URL  = 'https://script.google.com/macros/s/AKfycbwf3-MNZBBi64zXcNH7wfhBRoEBl9brtQ9QRI4Won5RmUIOrl_WBivN6uI5NAp6Mc0h/exec';
+
+let currentUser = null;
+let allStudents = [];
+
+window.onload = async function() {
+  const stored = sessionStorage.getItem('kitahUser');
+  if (!stored) { window.location.href = HUB_URL; return; }
+  currentUser = JSON.parse(stored);
+  document.getElementById('userName').textContent = currentUser.name || currentUser.email.split('@')[0];
+  await loadData();
+};
+
+async function callAPI(action, params = {}) {
+  const res  = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action, token: currentUser.token, ...params }) });
+  const data = await res.json();
+  if (!data.ok) throw new Error(data.error);
+  return data.data;
+}
+
+async function loadData() {
+  try {
+    const data = await callAPI('getBagrutTeacherDashboard');
+    allStudents = data.students || [];
+    renderStats(data.stats || {});
+    renderStudents(allStudents);
+  } catch(e) {
+    document.getElementById('studentsBody').innerHTML = '<tr><td colspan="6" class="empty-state">שגיאה: ' + e.message + '</td></tr>';
+  }
+}
+
+function renderStats(stats) {
+  document.getElementById('stTotal').textContent      = stats.total ?? 0;
+  document.getElementById('stAvg').textContent         = (stats.avg ?? 0) + '%';
+  document.getElementById('stDone').textContent        = stats.done ?? 0;
+  document.getElementById('stInProgress').textContent  = stats.inProgress ?? 0;
+  document.getElementById('stNotStarted').textContent  = stats.notStarted ?? 0;
+}
+
+function renderStudents(students) {
+  const body = document.getElementById('studentsBody');
+  if (!students.length) {
+    body.innerHTML = '<tr><td colspan="6" class="empty-state">עדיין אין תלמידים ברשימה. לחצו על "הוסף תלמיד/ה".</td></tr>';
+    return;
+  }
+  body.innerHTML = students.map(s => `
+    <tr>
+      <td>${escapeHtml(s.name)}</td>
+      <td style="color:var(--muted)">${escapeHtml(s.email)}</td>
+      <td>${escapeHtml(s.class_name || '—')}</td>
+      <td>
+        <div class="prog-wrap">
+          <div class="prog-bar"><div class="prog-fill" style="width:${s.percent}%"></div></div>
+          <div class="prog-pct">${s.percent}%</div>
+        </div>
+      </td>
+      <td>${s.units.map(u => `<span class="unit-pill ${u.completed ? '' : 'not-done'}">${u.completed ? '✔' : '—'} ${escapeHtml(u.name)}${u.completed ? ' · ' + u.best_score + '/' + u.total_questions : ''}</span>`).join(' ')}</td>
+      <td><button class="btn-sm btn-danger" onclick="removeStudent('${escapeAttr(s.email)}')">הסר</button></td>
+    </tr>
+  `).join('');
+}
+
+function filterStudents(q) {
+  const query = q.trim().toLowerCase();
+  if (!query) { renderStudents(allStudents); return; }
+  renderStudents(allStudents.filter(s =>
+    (s.name || '').toLowerCase().includes(query) ||
+    (s.email || '').toLowerCase().includes(query) ||
+    (s.class_name || '').toLowerCase().includes(query)
+  ));
+}
+
+function openAddModal() {
+  document.getElementById('stName').value = '';
+  document.getElementById('stEmail').value = '';
+  document.getElementById('stClass').value = '';
+  document.getElementById('addModalError').textContent = '';
+  document.getElementById('addModal').classList.add('show');
+}
+function hideModal() { document.getElementById('addModal').classList.remove('show'); }
+
+async function submitAddStudent() {
+  const name  = document.getElementById('stName').value.trim();
+  const email = document.getElementById('stEmail').value.trim();
+  const class_name = document.getElementById('stClass').value.trim();
+  const errEl = document.getElementById('addModalError');
+  if (!name || !email) { errEl.textContent = 'נא למלא שם ומייל'; return; }
+  try {
+    await callAPI('addBagrutStudent', { name, email, class_name });
+    hideModal();
+    await loadData();
+  } catch(e) { errEl.textContent = e.message; }
+}
+
+async function removeStudent(email) {
+  if (!confirm('להסיר את התלמיד/ה מהרשימה? כל היסטוריית ההתקדמות שלו/ה תישמר בגיליון אך לא תוצג יותר.')) return;
+  try {
+    await callAPI('removeBagrutStudent', { email });
+    await loadData();
+  } catch(e) { alert('שגיאה: ' + e.message); }
+}
+
+function escapeHtml(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeAttr(s) { return escapeHtml(s).replace(/`/g, '&#96;'); }
+
+function goBack() { window.location.href = HUB_URL + 'teacher/'; }
+function logout() { sessionStorage.removeItem('kitahUser'); window.location.href = HUB_URL; }
+</script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>תיירות בגרות — התקדמות אישית</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1E90FF">
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&family=Secular+One&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue: #1E90FF; --blue-dark: #0B66C7; --blue-light: #0B66C7;
+      --dark: #FFF8ED; --dark2: #FFFFFF; --dark3: #FFEFD9; --dark4: #F4DFB8;
+      --text: #1B2A3D; --muted: #6C7A8C; --error: #E5484D;
+      --success: #12A66E; --warning: #FF7A3D;
+      --teal: #0E9E8F; --purple: #8B5CF6; --purple-light: #6D28D9;
+      --font-display: 'Secular One', 'Heebo', sans-serif;
+    }
+    body {
+      font-family: 'Heebo', sans-serif; background: var(--dark); color: var(--text); min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse 900px 500px at 100% -10%, rgba(30,144,255,0.09), transparent 60%),
+        radial-gradient(ellipse 700px 500px at -10% 10%, rgba(255,122,61,0.06), transparent 60%);
+      background-attachment: fixed;
+    }
+    .topbar { background: rgba(255,255,255,0.85); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(27,42,61,0.07); padding: 0 24px; height: 66px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 10px; }
+    .topbar-left { display: flex; align-items: center; gap: 14px; }
+    .brand-mark { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(135deg, var(--blue), var(--purple)); display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 3px 12px rgba(30,144,255,0.35); font-size: 17px; }
+    .topbar-logo { font-family: var(--font-display); font-size: 17px; font-weight: 800; background: linear-gradient(135deg, var(--blue-light), var(--purple-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .topbar-subject { font-size: 11px; font-weight: 700; color: var(--purple-light); text-transform: uppercase; letter-spacing: 0.06em; background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.25); border-radius: 20px; padding: 3px 11px; }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
+    .user-name { font-family: var(--font-display); font-size: 13px; font-weight: 700; }
+    .btn-sm { padding: 7px 13px; border-radius: 9px; font-family: 'Heebo', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+    .btn-back, .btn-logout { background: transparent; border: 1px solid rgba(27,42,61,0.14); color: var(--muted); }
+    .btn-back:hover { border-color: var(--blue); color: var(--blue-light); }
+    .btn-logout:hover { border-color: var(--error); color: var(--error); }
+
+    .main { max-width: 800px; margin: 0 auto; padding: 26px 24px; }
+
+    .unit-card { background: linear-gradient(160deg, rgba(255,239,217,0.9), rgba(255,255,255,0.9)); border: 1px solid rgba(27,42,61,0.07); border-radius: 18px; padding: 22px; margin-bottom: 18px; }
+    .unit-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+    .unit-name { font-family: var(--font-display); font-size: 18px; font-weight: 800; }
+    .unit-badge { font-size: 11px; font-weight: 700; padding: 4px 11px; border-radius: 20px; }
+    .unit-badge.done { background: rgba(18,166,110,0.12); color: var(--success); }
+    .unit-badge.progress { background: rgba(255,122,61,0.12); color: var(--warning); }
+    .unit-badge.new { background: rgba(108,122,140,0.12); color: var(--muted); }
+
+    .prog-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .prog-bar { flex: 1; height: 9px; background: var(--dark4); border-radius: 5px; overflow: hidden; }
+    .prog-fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--purple), var(--blue)); box-shadow: 0 0 8px rgba(30,144,255,0.4); }
+    .prog-pct { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--purple-light); min-width: 40px; text-align: left; }
+
+    .unit-meta { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 16px; font-size: 12px; color: var(--muted); }
+    .unit-meta b { color: var(--text); font-family: var(--font-display); }
+
+    .unit-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn { padding: 10px 18px; border-radius: 10px; border: none; font-family: 'Heebo', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-primary { background: linear-gradient(135deg, var(--blue), var(--purple)); color: white; box-shadow: 0 3px 12px rgba(30,144,255,0.25); }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-ghost { background: var(--dark3); color: var(--text); }
+    .btn-ghost:hover { background: var(--dark4); }
+
+    /* בוחן */
+    .quiz-overlay { display: none; position: fixed; inset: 0; background: rgba(27,42,61,0.55); z-index: 300; overflow-y: auto; padding: 30px 16px; }
+    .quiz-overlay.show { display: block; }
+    .quiz-modal { max-width: 700px; margin: 0 auto; background: var(--dark2); border-radius: 20px; padding: 26px; }
+    .quiz-modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+    .quiz-modal-title { font-family: var(--font-display); font-size: 17px; font-weight: 800; }
+    .quiz-q { margin-bottom: 20px; padding-bottom: 18px; border-bottom: 1px solid rgba(27,42,61,0.07); }
+    .quiz-q:last-child { border-bottom: none; }
+    .quiz-q-text { font-weight: 700; margin-bottom: 10px; font-size: 14px; }
+    .quiz-opt { display: block; width: 100%; text-align: right; padding: 10px 14px; margin-bottom: 6px; border-radius: 10px; border: 1px solid rgba(27,42,61,0.12); background: var(--dark3); color: var(--text); font-family: 'Heebo', sans-serif; font-size: 13px; cursor: pointer; transition: all 0.15s; }
+    .quiz-opt:not(:disabled):hover { border-color: var(--blue); }
+    .quiz-opt.selected { border-color: var(--blue); background: rgba(30,144,255,0.1); }
+    .quiz-opt.correct { border-color: var(--success); background: rgba(18,166,110,0.12); }
+    .quiz-opt.wrong { border-color: var(--error); background: rgba(229,72,77,0.12); }
+    .quiz-explain { font-size: 12px; color: var(--muted); background: var(--dark3); border-radius: 10px; padding: 10px 12px; margin-top: 8px; display: none; }
+    .quiz-explain.show { display: block; }
+    .quiz-result { text-align: center; padding: 20px 0; }
+    .quiz-result-score { font-family: var(--font-display); font-size: 32px; font-weight: 800; color: var(--purple-light); margin-bottom: 6px; }
+    .quiz-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+    .loading-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(27,42,61,0.15); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="brand-mark">🎓</div>
+    <div class="topbar-logo">כיתה פלוס</div>
+    <div class="topbar-subject">🎓 תיירות בגרות</div>
+  </div>
+  <div class="topbar-right">
+    <div class="user-name" id="userName">טוען...</div>
+    <button class="btn-sm btn-back" onclick="goBack()">← דשבורד</button>
+    <button class="btn-sm btn-logout" onclick="logout()">יציאה</button>
+  </div>
+</div>
+
+<div class="main" id="unitsContainer">
+  <div class="empty-state"><span class="loading-spinner"></span> טוען התקדמות...</div>
+</div>
+
+<div class="quiz-overlay" id="quizOverlay">
+  <div class="quiz-modal">
+    <div class="quiz-modal-head">
+      <div class="quiz-modal-title" id="quizTitle">בוחן</div>
+      <button class="btn-sm btn-ghost" onclick="closeQuiz()">✕ סגירה</button>
+    </div>
+    <div id="quizBody"></div>
+  </div>
+</div>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function(){});
+}
+const HUB_URL = 'https://nisan1234-afk.github.io/';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwf3-MNZBBi64zXcNH7wfhBRoEBl9brtQ9QRI4Won5RmUIOrl_WBivN6uI5NAp6Mc0h/exec';
+
+/* אותו בוחן בדיוק כמו ב-mishor-hachof.html (20 שאלות אמת) — מקור אחד, בלי להמציא תוכן. */
+const UNIT_CONTENT = {
+  mishor_hachof: {
+    studyUrl: '../mishor-hachof.html',
+    quiz: [
+      { q: 'מהו אורכו הכולל של מישור החוף (מראש הנקרה ועד רצועת עזה)?', opts: ['90 ק"מ', '190 ק"מ', '290 ק"מ', '390 ק"מ'], correct: 1,
+        explain: 'אורך מישור החוף הוא כ-190 ק"מ, ברוחב שבין 4 ק"מ בצפון ל-40 ק"מ בדרום.' },
+      { q: 'איזה סוג חוף אופייני לצפון מישור החוף?', opts: ['חוף צבירה', 'חוף סחיפה', 'חוף אלמוגים', 'חוף ביצתי'], correct: 1,
+        explain: 'בצפון, גלים מכרסמים את רכסי הכורכר ויוצרים חוף סחיפה עם מפרצונים ולוחות גידוד. בדרום, לעומת זאת, החוף הוא חוף צבירה — רחב, ישר וחולי.' },
+      { q: 'באיזו שנה נבנה מסגד אל-ג\'זאר בעכו?', opts: ['1517', '1781', '1948', '2003'], correct: 1,
+        explain: 'מסגד אל-ג\'זאר נבנה ב-1781 על ידי הפאשא אחמד אל-ג\'זאר, ובנייתו כללה עמודי גרניט שהובאו מאיטליה.' },
+      { q: 'מהם שני האתרים הקדושים לבהאים בישראל?', opts: ['הכותל המערבי וקבר רחל', 'הגנים הבהאיים בחיפה וארמון בהג\'י בעכו', 'מסגד אל-אקצא וכנסיית הקבר', 'מצדה וקומראן'], correct: 1,
+        explain: 'הבהאות היא דת שנוסדה בפרס לפני כ-150 שנה. שני אתריה הקדושים בישראל הם הגנים הבהאיים בחיפה (אתר UNESCO) וארמון בהג\'י בעכו, שם קבור מייסד הדת.' },
+      { q: 'באיזו שנה הוכרזה "העיר הלבנה" בתל אביב כאתר מורשת עולמית של UNESCO?', opts: ['1948', '1993', '2003', '2013'], correct: 2,
+        explain: 'ב-2003 הכריז ארגון UNESCO על "העיר הלבנה" בתל אביב — הריכוז הגדול בעולם של מבנים בסגנון הבינלאומי (באוהאוס) — כאתר מורשת עולמי.' },
+      { q: 'מי בנה את העיר קיסריה?', opts: ['שלמה המלך', 'המלך הורדוס', 'הצלבנים', 'העות\'מאנים'], correct: 1,
+        explain: 'קיסריה נבנתה על ידי המלך הורדוס לכבוד הקיסר הרומי, והיא כוללת תיאטרון רומי, אקוודוקט והיפודרום השמורים היטב.' },
+      { q: 'מה הכינוי של גן לאומי בית גוברין-מרשה, שהוכרז אתר מורשת עולמי?', opts: ['"עמק האלה"', '"ארץ אלף המערות"', '"שפלת המלכים"', '"גבעת הזהב"'], correct: 1,
+        explain: 'הגן נקרא "ארץ אלף המערות" בזכות אלפי המערות שנחצבו בקרקע הגירית — ובהן מערות פעמון, קולומבריום ובריכות טבילה.' },
+      { q: 'מהם הגבולות הגיאוגרפיים של מישור החוף הצפוני?', opts: ['בין הכרמל לרצועת עזה', 'בין ראש הנקרה לכרמל', 'בין תל אביב לאשקלון', 'בין הירדן לים התיכון'], correct: 1,
+        explain: 'מישור החוף הצפוני משתרע בין ראש הנקרה בצפון (גבול ישראל-לבנון) לבין הכרמל בדרום, בין הרי הגליל במזרח לים התיכון במערב.' },
+      { q: 'מה רוחבו של מישור החוף בצפון לעומת הדרום?', opts: ['4 ק"מ בצפון, 40 ק"מ בדרום', '40 ק"מ בצפון, 4 ק"מ בדרום', 'רוחב אחיד של 20 ק"מ לכל אורכו', '10 ק"מ בכל אורכו'], correct: 0,
+        explain: 'מישור החוף מתרחב מצפון לדרום: כ-4 ק"מ בצפון (בסביבת ראש הנקרה) עד כ-40 ק"מ בדרום.' },
+      { q: 'כיצד נוצרו הנקרות בראש הנקרה?', opts: ['נחצבו בידי אדם לצורכי הגנה', 'מערות גיאולוגיות שנוצרו מגלי הים המכים בסלע הגיר', 'שרידי מנהרות צבאיות', 'תוצאה של רעידות אדמה'], correct: 1,
+        explain: 'הנקרות הן תופעת טבע — מערות שנוצרו לאורך אלפי שנים מפגיעת גלי הים בסלע הגיר הרך.' },
+      { q: 'לכמה דתות קדושה מערת אליהו הנביא בחיפה?', opts: ['לדת אחת בלבד', 'לשתי דתות', 'לשלוש דתות', 'לארבע דתות'], correct: 3,
+        explain: 'מערת אליהו הנביא קדושה לארבע דתות: יהודים, נוצרים, מוסלמים ודרוזים.' },
+      { q: 'מה מייחד את בית לוחמי הגטאות בגליל המערבי?', opts: ['מוזיאון ספורט ישראלי', 'מוזיאון שואה שנוסד על ידי ניצולים שהיו לוחמים בגטאות', 'מוזיאון למלחמת העצמאות', 'מוזיאון לתרבות ימית'], correct: 1,
+        explain: 'בית לוחמי הגטאות הוא מוזיאון שואה ייחודי, שנוסד על ידי ניצולי שואה שהיו בעצמם לוחמים בגטאות.' },
+      { q: 'מה ניתן לראות בגן לאומי מבצר מונפורט?', opts: ['שרידי מבצר צלבני של המסדר הגרמני בלב שמורת נחל כזיב', 'מקדש בהאי', 'נמל דייגים עתיק', 'מכרות נחושת קדומים'], correct: 0,
+        explain: 'מונפורט הוא מבצר צלבני של המסדר הגרמני, השוכן בלב שמורת נחל כזיב ומציע נוף מרהיב.' },
+      { q: 'לשם מה שימש האקוודוקט בקיסריה?', opts: ['הגנה על העיר מפני פולשים', 'הובלת מים לעיר ממעיינות הכרמל, כ-20 ק"מ', 'תעלת שיט לספינות מסחר', 'אחסון תבואה'], correct: 1,
+        explain: 'האקוודוקט הוא אמת מים רומית שהובילה מי שתייה לקיסריה ממרחק של כ-20 ק"מ מהכרמל, והוא שמור יפה על קו הים.' },
+      { q: 'מה ניתן לעשות בזיכרון יעקב?', opts: ['לצפות בתיאטרון רומי', 'לבקר בבית אהרנסון, לסייר ביקבים ("דרך היין") ולבקר ברמת הנדיב', 'לשוט בסירות באגם מלאכותי', 'לצלול בין שרידי אונייה'], correct: 1,
+        explain: 'זיכרון יעקב מציעה את בית אהרנסון (מטה ניל"י), סיורי יין ביקבי כרמל, הברון ואליעז, ואת גני הזיכרון ברמת הנדיב.' },
+      { q: 'מה מציעים הכפרים הדרוזיים דלית אל-כרמל ועוספיה לתיירים?', opts: ['ספורט ימי וצלילה', 'שוק ססגוני, מטבח דרוזי אותנטי ואירוח מסורתי', 'מסלולי סקי', 'תצפית על נמל תעופה'], correct: 1,
+        explain: 'בשני הכפרים: שוק צבעוני, מטבח דרוזי מסורתי, וביקור בבתי מורשת עם אירוח ביתי — למשל מרכז "אל-בדיה" בעוספיה.' },
+      { q: 'באיזו שנה אוחדו תל אביב ויפו לעיר אחת?', opts: ['1909', '1933', '1948', '1950'], correct: 3,
+        explain: 'תל אביב נוסדה רשמית ב-1909 לצד יפו העתיקה. ב-1950 אוחדו השתיים לעיר אחת — תל אביב-יפו.' },
+      { q: 'מה מוצג במוזיאון אנו (בית התפוצות לשעבר)?', opts: ['תולדות מדינת ישראל מאז הקמתה', 'סיפורו של העם היהודי בתפוצות לאורך הדורות', 'תולדות העיר תל אביב', 'אמנות מודרנית ועכשווית בלבד'], correct: 1,
+        explain: 'מוזיאון אנו מספר את סיפור העם היהודי — זהותו, תרבותו ומורשתו — דרך תערוכות קבע ומתחלפות ומאגרי מידע עשירים.' },
+      { q: 'מדוע יש בגן לאומי בית גוברין כל כך הרבה מערות פעמון?', opts: ['נוצרו מפעולת גלי הים', 'הקרקע הגירית הרכה אפשרה חציבה בידי אדם', 'נוצרו מרעידות אדמה חוזרות', 'הן שרידי מכרות ברזל'], correct: 1,
+        explain: 'הקרקע הגירית הרכה של שפלת יהודה אפשרה לחצוב בקלות יחסית מערות ענק בצורת פעמון — ולכן מכונה האזור "ארץ אלף המערות".' },
+      { q: 'מה שימש הקולומבריום בבית גוברין?', opts: ['מקדש לפולחן דתי', 'מקום קינון ליונים, לצורכי מאכל ודישון', 'בריכת טבילה', 'אולם קבלת אורחים'], correct: 1,
+        explain: 'הקולומבריום הוא מערה עם מאות נישות קטנות ששימשו לגידול יונים — למאכל, לדישון השדות ואף למסחר.' }
+    ]
+  }
+};
+
+let currentUser = null;
+let units = [];
+let currentQuiz = null;
+let quizAnswers = [];
+
+window.onload = async function() {
+  const stored = sessionStorage.getItem('kitahUser');
+  if (!stored) { window.location.href = HUB_URL; return; }
+  currentUser = JSON.parse(stored);
+  document.getElementById('userName').textContent = currentUser.name || currentUser.email.split('@')[0];
+  await loadProgress();
+};
+
+async function callAPI(action, params = {}) {
+  const res  = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action, token: currentUser.token, ...params }) });
+  const data = await res.json();
+  if (!data.ok) throw new Error(data.error);
+  return data.data;
+}
+
+async function loadProgress() {
+  const container = document.getElementById('unitsContainer');
+  try {
+    const data = await callAPI('getBagrutMyProgress');
+    units = data.units || [];
+    renderUnits();
+  } catch(e) {
+    container.innerHTML = '<div class="empty-state">שגיאה: ' + e.message + '</div>';
+  }
+}
+
+function renderUnits() {
+  const container = document.getElementById('unitsContainer');
+  if (!units.length) {
+    container.innerHTML = '<div class="empty-state">אין עדיין יחידות לימוד זמינות.</div>';
+    return;
+  }
+  container.innerHTML = units.map(u => {
+    const pct = u.completed ? Math.round(100 * u.best_score / u.total_questions) : 0;
+    const badge = u.completed ? '<span class="unit-badge done">✔ הושלם</span>' : '<span class="unit-badge new">טרם התחיל/ה</span>';
+    const attemptsText = u.attempts > 0 ? u.attempts + ' ניסיונות' : 'עדיין לא נוסה';
+    return `
+      <div class="unit-card">
+        <div class="unit-head">
+          <div class="unit-name">🗺️ ${escapeHtml(u.name)}</div>
+          ${badge}
+        </div>
+        <div class="prog-wrap">
+          <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+          <div class="prog-pct">${pct}%</div>
+        </div>
+        <div class="unit-meta">
+          <div>ציון הכי טוב: <b>${u.best_score}/${u.total_questions}</b></div>
+          <div>${attemptsText}</div>
+        </div>
+        <div class="unit-actions">
+          ${UNIT_CONTENT[u.unit_id] ? `<a class="btn btn-ghost" href="${UNIT_CONTENT[u.unit_id].studyUrl}" target="_blank">📖 לחומר הלימוד</a>` : ''}
+          <button class="btn btn-primary" onclick="startQuiz('${u.unit_id}')">${u.completed ? '🔁 לנסות שוב' : '▶ להתחיל בוחן'}</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function startQuiz(unit_id) {
+  const content = UNIT_CONTENT[unit_id];
+  if (!content) return;
+  currentQuiz = { unit_id, questions: content.quiz };
+  quizAnswers = new Array(content.quiz.length).fill(null);
+  const unit = units.find(u => u.unit_id === unit_id);
+  document.getElementById('quizTitle').textContent = 'בוחן — ' + (unit ? unit.name : '');
+  renderQuizBody();
+  document.getElementById('quizOverlay').classList.add('show');
+}
+
+function closeQuiz() {
+  document.getElementById('quizOverlay').classList.remove('show');
+  currentQuiz = null;
+}
+
+function renderQuizBody() {
+  const body = document.getElementById('quizBody');
+  body.innerHTML = currentQuiz.questions.map((item, qi) => `
+    <div class="quiz-q" id="quizQ${qi}">
+      <div class="quiz-q-text">${qi + 1}. ${escapeHtml(item.q)}</div>
+      ${item.opts.map((opt, oi) => `<button class="quiz-opt" onclick="selectQuizOpt(${qi}, ${oi})">${escapeHtml(opt)}</button>`).join('')}
+      <div class="quiz-explain" id="quizExplain${qi}">${escapeHtml(item.explain)}</div>
+    </div>
+  `).join('') + `
+    <div class="quiz-footer">
+      <button class="btn btn-primary" onclick="submitQuiz()">✔ סיום ובדיקה</button>
+    </div>
+  `;
+}
+
+function selectQuizOpt(qi, oi) {
+  quizAnswers[qi] = oi;
+  const qEl = document.getElementById('quizQ' + qi);
+  qEl.querySelectorAll('.quiz-opt').forEach((btn, i) => btn.classList.toggle('selected', i === oi));
+}
+
+async function submitQuiz() {
+  const total = currentQuiz.questions.length;
+  const unanswered = quizAnswers.findIndex(a => a === null);
+  if (unanswered !== -1) {
+    if (!confirm('יש שאלות בלי תשובה. לסיים בכל זאת?')) return;
+  }
+
+  let score = 0;
+  currentQuiz.questions.forEach((item, qi) => {
+    const qEl = document.getElementById('quizQ' + qi);
+    const opts = qEl.querySelectorAll('.quiz-opt');
+    opts.forEach((btn, oi) => {
+      btn.disabled = true;
+      if (oi === item.correct) btn.classList.add('correct');
+      else if (oi === quizAnswers[qi]) btn.classList.add('wrong');
+    });
+    document.getElementById('quizExplain' + qi).classList.add('show');
+    if (quizAnswers[qi] === item.correct) score++;
+  });
+
+  const body = document.getElementById('quizBody');
+  const resultHtml = `
+    <div class="quiz-result">
+      <div class="quiz-result-score">${score} / ${total}</div>
+      <div style="color:var(--muted);font-size:13px;">${Math.round(100 * score / total)}% הצלחה — נשמר בהתקדמות שלך</div>
+    </div>
+  `;
+  body.insertAdjacentHTML('afterbegin', resultHtml);
+  const footer = body.querySelector('.quiz-footer');
+  footer.innerHTML = '<button class="btn btn-primary" onclick="closeQuiz(); loadProgress();">סגירה וחזרה להתקדמות</button>';
+
+  try {
+    await callAPI('saveBagrutQuizResult', { unit_id: currentQuiz.unit_id, score, total });
+  } catch(e) {
+    alert('הציון חושב אך לא נשמר: ' + e.message);
+  }
+}
+
+function escapeHtml(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function goBack() { window.location.href = HUB_URL + 'student/'; }
+function logout() { sessionStorage.removeItem('kitahUser'); window.location.href = HUB_URL; }
+</script>
+</body>
+</html>
