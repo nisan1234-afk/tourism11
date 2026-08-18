@@ -197,13 +197,218 @@
 
   </div>
 
-  <p class="source-note">מבוסס על מצגת "מסע אל ים המלח ומדבר יהודה" (NotebookLM) וחוברת הלימוד המסכמת של מגמת התיירות אלוני הבשן, כיתה יא׳.</p>
+  <div class="section">
+    <div class="section-title">🔗 התאמה — אתר ↔ אזור</div>
+    <div class="section-sub">לחצו על אתר, ואז על האזור שבו הוא נמצא</div>
+    <div class="sort-pool" id="sortPool"></div>
+    <div class="sort-buckets" id="sortBuckets"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🧠 בוחן ידע — ים המלח ומדבר יהודה</div>
+    <div class="section-sub">20 שאלות על האזור, מבוססות על חומרי הלימוד</div>
+    <div class="quiz-box">
+      <div id="quizContainer"></div>
+      <div class="quiz-actions">
+        <button onclick="checkQuiz()">בדיקת תשובות</button>
+        <button onclick="resetQuiz()">איפוס</button>
+        <span class="quiz-score" id="quizScore"></span>
+      </div>
+    </div>
+  </div>
+
+  <p class="source-note">מבוסס על מצגת "מסע אל ים המלח ומדבר יהודה" (NotebookLM) וחוברת הלימוד המסכמת של מגמת התיירות אלוני הבשן, כיתה יא׳. לא נמצא קובץ ייעודי של שאלות בגרות אמיתיות לאזור זה — לכן אין כאן תיבות "שאלת בגרות אמיתית", בהתאם לכלל שלא ממציאים תוכן.</p>
 
 </main>
 
 <footer class="site-footer">
   אתר לימוד פרטי למגמת תיירות · כיתה יא׳ · מבוסס על חומרי הוראה שנאספו ונערכו לצורכי חזרה לבגרות
 </footer>
+
+<script>
+const QUIZ_DATA = [
+  { q: 'מהו השבר הסורי-אפריקאי?', opts: ['בקע גיאולוגי הנמשך כ-6,000 ק"מ מסוריה ועד טנזניה', 'שרשרת הרים בין ישראל לירדן', 'שם נוסף למדבר יהודה', 'תעלת מים מלאכותית'], correct: 0,
+    explain: 'השבר הסורי-אפריקאי הוא עמק אדיר הנמשך לאורך למעלה מ-6,000 ק"מ, מצפון סוריה ועד טנזניה.' },
+  { q: 'באיזה חלק מהבקע נמצא ים המלח?', opts: ['החלק הגבוה ביותר', 'החלק הנמוך ביותר', 'המרכז המדויק', 'קצהו הצפוני'], correct: 1,
+    explain: 'ים המלח הוא חלקו הנמוך ביותר של הבקע — תופעה גיאולוגית בקנה מידה עולמי.' },
+  { q: 'לפני כמה שנים החל להיווצר הבקע?', opts: ['כ-25 אלף שנה', 'כ-2.5 מיליון שנה', 'כ-25 מיליון שנה', 'כ-250 מיליון שנה'], correct: 2,
+    explain: 'התהליך החל להיווצר לפני כ-25 מיליון שנה כתוצאה מתנועת הלוחות הטקטוניים, ונמשך עד ימינו.' },
+  { q: 'מה גורם לתופעת "מדבר בצל גשם" בים המלח?', opts: ['עננים מורידים את רוב הגשם מעל הרי יהודה, ומתחממים ומתרחבים במורד המזרחי בלי משקעים', 'קרבה לים התיכון גורמת ליובש', 'רוחות קרות מהמזרח', 'גובה פני הים בלבד'], correct: 0,
+    explain: 'עננים מהים התיכון מתקררים ומורידים גשם מעל הרי יהודה; כשהם ממשיכים מזרחה לעבר בקעת ים המלח, הם מתחממים ומתרחבים וכמעט אינם מורידים משקעים.' },
+  { q: 'מהו קאסר אל-יהוד?', opts: ['אתר הטבילה המקודש לנצרות בנהר הירדן', 'מבצר צלבני', 'שוק בדואי מסורתי', 'מכרה מלח עתיק'], correct: 0,
+    explain: 'קאסר אל-יהוד הוא אתר הטבילה המקודש לנצרות — לפי המסורת כאן הטביל יוחנן המטביל את ישוע בנהר הירדן.' },
+  { q: 'מהו נבי מוסא?', opts: ['אתר עלייה לרגל קדוש למוסלמים, מקום קבורתו המיוחס של משה רבנו', 'כפר דרוזי', 'מצודה עות\'מאנית', 'נמל דייגים'], correct: 0,
+    explain: 'נבי מוסא הוא אתר עלייה לרגל קדוש למוסלמים; המסורת המוסלמית מזהה כאן את מקום קבורתו של משה רבנו.' },
+  { q: 'מה התגלה בקומראן?', opts: ['מגילות ים המלח', 'שרידי ארמון הורדוס', 'פסיפס גלגל המזלות', 'אוצר מטבעות רומיות'], correct: 0,
+    explain: 'בקומראן התגלו מגילות ים המלח — הממצא הארכיאולוגי החשוב ביותר שהתגלה במאה ה-20, הכולל את הכתבים הקדומים ביותר בעברית.' },
+  { q: 'מי חיה בקומראן וקשורה לגילוי המגילות?', opts: ['כת המדבר (האיסיים)', 'הצלבנים', 'הנביטים', 'השומרונים'], correct: 0,
+    explain: 'קומראן הייתה ביתה של כת המדבר (האיסיים), שם התגלו המגילות הגנוזות.' },
+  { q: 'מה מיוחד בעינות צוקים (עין פשחה)?', opts: ['נווה המדבר הנמוך בעולם', 'המפל הגבוה ביותר בישראל', 'שמורת יער היחידה במדבר', 'אתר צלילה'], correct: 0,
+    explain: 'עינות צוקים הוא נווה המדבר הנמוך בעולם — שמורת טבע עם בריכות מים צלולות וצמחייה עשירה.' },
+  { q: 'כמה מיני צמחים כוללת הגן הבוטני בקיבוץ עין גדי?', opts: ['כ-90', 'כ-900', 'כ-9,000', 'כ-9'], correct: 1,
+    explain: 'הגן הבוטני בעין גדי כולל כ-900 מיני צמחים מרחבי העולם המשגשגים באקלים המיוחד.' },
+  { q: 'אילו נחלים זורמים בשמורת עין גדי?', opts: ['נחל דוד ונחל ערוגות', 'נחל פרת ונחל קדרון', 'נחל צין ונחל חוור', 'נחל שורק ונחל האלה'], correct: 0,
+    explain: 'שמורת עין גדי היא נווה המדבר הגדול בארץ, עם נחל דוד ונחל ערוגות ומעיינות זורמים.' },
+  { q: 'מי בנה את ארמון-המבצר מצדה?', opts: ['המלך הורדוס', 'המלך שלמה', 'החשמונאים', 'הקיסר הרומי טיטוס'], correct: 0,
+    explain: 'מצדה היא ארמון-מבצר מפואר שנבנה על ידי המלך הורדוס על צוק מבודד.' },
+  { q: 'לְמה שימשה מצדה במהלך המרד הגדול?', opts: ['מפלטם האחרון של המורדים היהודים ברומאים', 'בסיס צבאי רומי', 'מקום מושבו של הסנהדרין', 'תחנת מסחר בין-לאומית'], correct: 0,
+    explain: 'מצדה שימשה כמפלטם האחרון של המורדים היהודים ברומאים במהלך המרד הגדול, והוכרזה אתר מורשת עולמית של אונסק"ו.' },
+  { q: 'מה מייחד את אזור עין בוקק?', opts: ['מתחם המלונות והתיירות המרכזי של ים המלח, מרכז ספא ומרפא', 'שמורת טבע לא-מבוקרת', 'אתר ארכיאולוגי צלבני', 'נמל דיג פעיל'], correct: 0,
+    explain: 'עין בוקק הוא מתחם המלונות והתיירות המרכזי של ים המלח, לחוף בריכות האידוי של האגן הדרומי — מרכז לספא ומרפא.' },
+  { q: 'ממה עשוי הר סדום?', opts: ['כולו מגוש מלח', 'בזלת געשית', 'גיר ודולומיט', 'חול וחוואר'], correct: 0,
+    explain: 'הר סדום עשוי כולו מגוש מלח, מחורר במערות, מחילות ופירים שנוצרו מהמסת המלח.' },
+  { q: 'מיהו משה נובומייסקי?', opts: ['מייסד מפעלי ים המלח', 'ראש הממשלה הראשון', 'מגלה מגילות קומראן', 'ארכיאולוג שחפר במצדה'], correct: 0,
+    explain: 'מרכז המבקרים בהר סדום מספר את סיפורו של משה נובומייסקי, מייסד מפעלי ים המלח וחזונו להפיק אשלג ממי הים.' },
+  { q: 'פי כמה ריכוז המלחים בים המלח גבוה ממי ים רגילים?', opts: ['פי שתיים', 'פי חמש', 'פי עשרה', 'פי מאה'], correct: 2,
+    explain: 'ריכוז המלחים בים המלח גבוה פי עשרה ממי ים רגילים, ומאפשר ציפה טבעית ומרגיעה.' },
+  { q: 'מדוע יש ריכוז חמצן גבוה יחסית באוויר בים המלח?', opts: ['הלחץ הברומטרי הגבוה בנקודה הנמוכה בעולם', 'קרבה לצמחייה עשירה', 'רוחות ים חזקות', 'גובה רב מעל פני הים'], correct: 0,
+    explain: 'הלחץ הברומטרי הגבוה בנקודה הנמוכה בעולם מעלה את ריכוז החמצן באוויר.' },
+  { q: 'מהי הסיבה העיקרית לירידת מפלס ים המלח?', opts: ['ניצול יתר של מקורות המים הזורמים אליו', 'התחממות גלובלית בלבד', 'רעידות אדמה תכופות', 'זיהום תעשייתי'], correct: 0,
+    explain: 'מפלס ים המלח יורד בקצב מדאיג, בעיקר עקב ניצול יתר של מקורות המים הזורמים אליו.' },
+  { q: 'כיצד נוצרים בולענים בחוף ים המלח?', opts: ['מי תהום מתוקים ממיסים שכבות מלח תת-קרקעיות ויוצרים חללים שקורסים', 'פעילות געשית', 'חפירות כרייה בלתי חוקיות', 'שיטפונות עונתיים'], correct: 0,
+    explain: 'ירידת מפלס הים גורמת לחדירת מי תהום מתוקים הממיסים שכבות מלח תת-קרקעיות, ויוצרת חללים שגורמים להתמוטטות פתאומית של פני הקרקע.' }
+];
+
+function buildQuiz() {
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = QUIZ_DATA.map((item, qi) => `
+    <div class="quiz-q" id="q-${qi}">
+      <div class="q-title">${qi + 1}. ${item.q}</div>
+      <div class="q-opts">
+        ${item.opts.map((opt, oi) => `<button class="q-opt" onclick="selectOpt(${qi}, ${oi})" id="opt-${qi}-${oi}">${opt}</button>`).join('')}
+      </div>
+      <div class="q-explain" id="explain-${qi}">${item.explain}</div>
+    </div>
+  `).join('');
+}
+
+let answers = {};
+function selectOpt(qi, oi) {
+  answers[qi] = oi;
+  QUIZ_DATA[qi].opts.forEach((_, i) => document.getElementById('opt-' + qi + '-' + i).classList.remove('selected'));
+  document.getElementById('opt-' + qi + '-' + oi).classList.add('selected');
+}
+
+function checkQuiz() {
+  let score = 0;
+  QUIZ_DATA.forEach((item, qi) => {
+    item.opts.forEach((_, oi) => {
+      const btn = document.getElementById('opt-' + qi + '-' + oi);
+      btn.disabled = true;
+      if (oi === item.correct) btn.classList.add('correct');
+      else if (answers[qi] === oi) btn.classList.add('wrong');
+    });
+    if (answers[qi] === item.correct) score++;
+    document.getElementById('explain-' + qi).classList.add('show');
+  });
+  const scoreEl = document.getElementById('quizScore');
+  scoreEl.textContent = 'הציון שלכם: ' + score + ' מתוך ' + QUIZ_DATA.length + ' (' + Math.round(100 * score / QUIZ_DATA.length) + '%)';
+  scoreEl.classList.add('show');
+}
+
+function resetQuiz() {
+  answers = {};
+  document.getElementById('quizScore').classList.remove('show');
+  buildQuiz();
+}
+
+buildQuiz();
+
+/* ===== התאמת אתר ↔ אזור ===== */
+const SORT_ITEMS = [
+  { site: 'נבי מוסא', bucket: 'צפון' },
+  { site: 'קאסר אל-יהוד', bucket: 'צפון' },
+  { site: 'קומראן', bucket: 'צפון' },
+  { site: 'שמורת עין גדי', bucket: 'מרכז' },
+  { site: 'מצדה', bucket: 'מרכז' },
+  { site: 'הגן הבוטני בעין גדי', bucket: 'מרכז' },
+  { site: 'עין בוקק', bucket: 'דרום' },
+  { site: 'הר סדום', bucket: 'דרום' }
+];
+let sortSelectedChip = null;
+function renderSort() {
+  const buckets = [...new Set(SORT_ITEMS.map(i => i.bucket))];
+  document.getElementById('sortPool').innerHTML = shuffleSort(SORT_ITEMS).map(item =>
+    `<button class="sort-chip" data-site="${item.site}" onclick="selectSortChip(this)">${item.site}</button>`
+  ).join('');
+  document.getElementById('sortBuckets').innerHTML = buckets.map(b =>
+    `<div class="sort-bucket" data-bucket="${b}" onclick="selectSortBucket(this)"><h4>${b}</h4><div class="sort-bucket-items" id="bucket-${b.replace(/\s/g,'')}"></div></div>`
+  ).join('');
+  sortSelectedChip = null;
+}
+function shuffleSort(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function selectSortChip(el) {
+  if (sortSelectedChip) sortSelectedChip.classList.remove('selected');
+  sortSelectedChip = el;
+  el.classList.add('selected');
+}
+function selectSortBucket(el) {
+  if (!sortSelectedChip) return;
+  const site = sortSelectedChip.dataset.site;
+  const item = SORT_ITEMS.find(i => i.site === site);
+  if (item.bucket === el.dataset.bucket) {
+    sortSelectedChip.classList.add('sorted');
+    document.getElementById('bucket-' + el.dataset.bucket.replace(/\s/g,'')).insertAdjacentHTML('beforeend', `<span class="placed">✔ ${site}</span>`);
+    sortSelectedChip = null;
+  } else {
+    el.classList.add('wrong-flash');
+    setTimeout(() => el.classList.remove('wrong-flash'), 500);
+  }
+}
+renderSort();
+
+/* ===== בוט שאלות — עונה אך ורק מתוך חומר הלימוד בדרייב, לא ניגש לשום מקור חיצוני ===== */
+const BAGRUT_API_URL = 'https://script.google.com/macros/s/AKfycbwf3-MNZBBi64zXcNH7wfhBRoEBl9brtQ9QRI4Won5RmUIOrl_WBivN6uI5NAp6Mc0h/exec';
+
+async function callBagrutBot(question, mode, bagrutQuestion) {
+  const res = await fetch(BAGRUT_API_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'askBagrutBot', question, mode: mode || 'qa', bagrut_question: bagrutQuestion || '' })
+  });
+  const data = await res.json();
+  if (!data.ok) throw new Error(data.error);
+  return data.data.reply;
+}
+function toggleBotWidget(open) { document.getElementById('botWidget').classList.toggle('open', open); }
+function appendBotMsg(role, text) {
+  const log = document.getElementById('botLog');
+  const div = document.createElement('div');
+  div.className = 'bot-msg bot-msg-' + role;
+  div.textContent = text;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+  return div;
+}
+async function sendBotQuestion(e) {
+  if (e) e.preventDefault();
+  const input = document.getElementById('botInput');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  appendBotMsg('user', q);
+  const pending = appendBotMsg('bot', '...חושב, רגע');
+  try { pending.textContent = await callBagrutBot(q, 'qa', ''); }
+  catch (err) { pending.textContent = 'שגיאה: ' + err.message; }
+}
+</script>
+
+<button class="bot-toggle" onclick="toggleBotWidget(true)">💬 שאלו אותי / למדו איתי</button>
+<div class="bot-widget" id="botWidget">
+  <div class="bot-widget-head">
+    <strong>🎓 עוזר הלמידה — ים המלח ומדבר יהודה</strong>
+    <button class="bot-widget-close" onclick="toggleBotWidget(false)">✕</button>
+  </div>
+  <div class="bot-widget-sub">עונה רק על סמך חומר הלימוד האמיתי — לא ממציא ולא ניגש למקורות חיצוניים</div>
+  <div class="bot-log" id="botLog"></div>
+  <form class="bot-widget-form" onsubmit="sendBotQuestion(event)">
+    <input type="text" id="botInput" placeholder="שאלו כל דבר על החומר..." autocomplete="off" />
+    <button type="submit">שלח</button>
+  </form>
+</div>
 
 </body>
 </html>
