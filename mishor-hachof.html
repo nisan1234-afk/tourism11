@@ -339,6 +339,13 @@
   </div>
 
   <div class="section">
+    <div class="section-title">🔗 התאמה — אתר ↔ אזור משנה</div>
+    <div class="section-sub">לחצו על אתר, ואז על אזור המשנה שבו הוא נמצא</div>
+    <div class="sort-pool" id="sortPool"></div>
+    <div class="sort-buckets" id="sortBuckets"></div>
+  </div>
+
+  <div class="section">
     <div class="section-title">🎯 בוחן ידע — מישור החוף</div>
     <div class="quiz-box">
       <p class="quiz-intro">בדקו את עצמכם על החומר שלמדתם באזור זה. סמנו תשובה לכל שאלה ולחצו על "בדוק תשובות" לקבלת ציון ומשוב מיידי.</p>
@@ -452,6 +459,53 @@ function resetQuiz() {
 }
 
 buildQuiz();
+
+/* ===== התאמת אתר ↔ אזור משנה ===== */
+const SORT_ITEMS = [
+  { site: 'עכו', bucket: 'צפון (חוף הגליל המערבי)' },
+  { site: 'ראש הנקרה', bucket: 'צפון (חוף הגליל המערבי)' },
+  { site: 'קיסריה', bucket: 'חיפה והכרמל' },
+  { site: 'זכרון יעקב', bucket: 'חיפה והכרמל' },
+  { site: 'יפו', bucket: 'תל אביב-יפו' },
+  { site: 'העיר הלבנה', bucket: 'תל אביב-יפו' },
+  { site: 'אשקלון', bucket: 'מרכז ודרום' },
+  { site: 'בית גוברין', bucket: 'מרכז ודרום' }
+];
+let sortSelectedChip = null;
+function renderSort() {
+  const buckets = [...new Set(SORT_ITEMS.map(i => i.bucket))];
+  document.getElementById('sortPool').innerHTML = shuffleSort(SORT_ITEMS).map(item =>
+    `<button class="sort-chip" data-site="${item.site}" onclick="selectSortChip(this)">${item.site}</button>`
+  ).join('');
+  document.getElementById('sortBuckets').innerHTML = buckets.map(b =>
+    `<div class="sort-bucket" data-bucket="${b}" onclick="selectSortBucket(this)"><h4>${b}</h4><div class="sort-bucket-items" id="bucket-${b.replace(/\s/g,'')}"></div></div>`
+  ).join('');
+  sortSelectedChip = null;
+}
+function shuffleSort(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function selectSortChip(el) {
+  if (sortSelectedChip) sortSelectedChip.classList.remove('selected');
+  sortSelectedChip = el;
+  el.classList.add('selected');
+}
+function selectSortBucket(el) {
+  if (!sortSelectedChip) return;
+  const site = sortSelectedChip.dataset.site;
+  const item = SORT_ITEMS.find(i => i.site === site);
+  if (item.bucket === el.dataset.bucket) {
+    sortSelectedChip.classList.add('sorted');
+    document.getElementById('bucket-' + el.dataset.bucket.replace(/\s/g,'')).insertAdjacentHTML('beforeend', `<span class="placed">✔ ${site}</span>`);
+    sortSelectedChip = null;
+  } else {
+    el.classList.add('wrong-flash');
+    setTimeout(() => el.classList.remove('wrong-flash'), 500);
+  }
+}
+renderSort();
 
 /* ===== בוט שאלות — עונה אך ורק מתוך חומר הלימוד בדרייב, לא ניגש לשום מקור חיצוני ===== */
 const BAGRUT_API_URL = 'https://script.google.com/macros/s/AKfycbwf3-MNZBBi64zXcNH7wfhBRoEBl9brtQ9QRI4Won5RmUIOrl_WBivN6uI5NAp6Mc0h/exec';
