@@ -1,0 +1,109 @@
+# tourism11 — אתר לימוד עצמאי לבגרות בתיירות
+
+תיעוד ארכיטקטורה + מוסכמות, כדי שכל סשן Claude (או תת-סוכן) עתידי יוכל להמשיך את
+הפרויקט מבלי לגלות מחדש דברים שכבר ידועים. עדכנו את הקובץ הזה כשמשהו מהותי משתנה.
+
+## כלל-על מחייב (אף פעם לא לשבור)
+
+**אסור להמציא תוכן שאלות בגרות.** כל שאלת בגרות/תוכן לימודי חייב להתבסס על חומרי
+ההוראה האמיתיים של נסים בדרייב, או על מקורות רשמיים מצוטטים במפורש (למשל מחוון
+משרד החינוך). זה חל גם על תוכן שנוצר בעזרת AI (הבוט, כרטיסיות עתידיות וכו').
+
+## מבנה האתר
+
+ריפו סטטי, מוגש דרך `nisan1234-afk.github.io/tourism11/`. דפים: `index.html`,
+`musagim.html` (מושגים), `hashivut.html` (חשיבות התיירות), `yam-hamelach.html`,
+`haamakim.html`, `mishor-hachof.html`, `yerushalayim.html`. כולם חולקים `style.css`
+משותף — כל שינוי ב-CSS משם משפיע אוטומטית על כל הדפים.
+
+מערכת עיצוב (`style.css`): `--sand`, `--card`, `--ink`, `--teal` (#0E7C7B),
+`--terracotta` (#C1622D), `--gold`. גופן תצוגה: Secular One. מחלקות מרכזיות:
+`.card`, `.region-card`, `.term-card`, `.quiz-box` (בוחן), `.bagrut-real` (תיבת
+שאלת בגרות אמיתית עם `.btn-hint`), `.bot-widget`/`.bot-toggle` (ווידג'ט הבוט).
+
+**סטטוס בנייה לפי אזור** (מעודכן): `mishor-hachof.html` **מלא** — תוכן מועמק, 20
+שאלות בוחן, 8 שאלות בגרות אמיתיות עם כפתור "עזרו לי", ווידג'ט בוט. `yam-hamelach.html`,
+`haamakim.html`, `yerushalayim.html` — **טרם טופלו** (רק תוכן טקסטואלי בסיסי, בלי
+בוחן/שאלות בגרות/בוט). `musagim.html`, `hashivut.html` — תוכן קיים, לא נבדק/הועמק
+בפרויקט הזה.
+
+`teacher/index.html` ו-`student/index.html` — דשבורד גדור (Google login) למקצוע
+"תיירות בגרות" בכיתה פלוס (ר' למטה).
+
+## חומרי מקור בדרייב (חובה לקרוא מהם, לא להמציא)
+
+תיקיית שורש: **"אתר תירות אלוני הבשן"** (Drive folder ID
+`17sh3M-n6Gy56lUED85r6yTDNWwt_Ncah`) — מכילה:
+- `חבלים` (`1LB5avqcn2kFlNLqGw8f5UPBBGYQDAPuz`) — תת-תיקייה לכל אזור: ירושלים,
+  מישור החוף, העמקים, ים המלח ומדבר יהודה. לכל אזור: חוברות עבודה/תרגול,
+  שאלות בגרות אמיתיות (docx), מחוונים, מצגות.
+- `מושגים` (`1ZpugfpPqbgSfFRJs1T1FvbmVncWS5TkC`)
+- `חשיבותה של התיירות לישראל` (`1S5VckUqAbavG5BPo3_qwUHSaTpfqv112`)
+
+לפני בניית תוכן לאזור חדש: לקרוא (`mcp__Google_Drive__read_file_content` /
+`search_files`) את כל הקבצים הרלוונטיים בתת-התיקייה של אותו אזור, ולבנות תוכן/שאלות
+רק מהם — בדיוק כמו שנעשה למישור החוף.
+
+## בקאנד — Google Apps Script + Sheets
+
+**אין לי (Claude Code) יכולת לפרוס Apps Script בעצמי** — אין API/כלי לכך. כל
+שינוי בקוד הבקאנד עובר דרך תיקיית Drive משותפת עם שיחת Claude נוספת שיש לה גישת
+דפדפן אמיתית ("B"):
+
+📁 **תיקיית תיאום**: `https://drive.google.com/drive/folders/1Y7XM14gP8guIfqEztxHsSX-YtMXIPDsy`
+— יש בה `00 — READ ME FIRST` (מוסכמת עבודה) ומסמכים ממוספרים (01, 02...) שכל אחד
+הוא חבילת עבודה חד-כיוונית (אני כותב, B מבצע ומעדכן יומן סטטוס בתחתית המסמך).
+**לפני שממשיכים** — לקרוא את ה-README הזה כדי להבין את הפרוטוקול, ולבדוק אילו
+מסמכים כבר קיימים/בוצעו לפני יצירת מסמך חדש.
+
+**הפרויקט**: `https://script.google.com/d/1ldbT0kIL8ghtOGrZWJ1xlcw0GJMQ_2rjJGXFpyLbI13vjU8pjzBnk7Pi/edit`
+(נגיש רק ל-B, לא לי — אני יכול לקרוא אותו כקובץ Drive עם
+`download_file_content` + `exportMimeType: application/vnd.google-apps.script+json`,
+אבל לא לכתוב אליו).
+
+**קבצים בפרויקט**: `code.gs` (הראשי — doPost router, אימות גוגל, כל הפעולות של
+תיירות דיגיטלית + כיתה פלוס עצמה), `bagrut.gs` (כל הבקאנד של תיירות בגרות — נפרד
+לגמרי, לא נוגע ב-code.gs מעבר לרישום 6 שורות ב-doPost).
+
+**גיליונות**:
+- `SHEETS.KITA_PLUS` (`10PxA-ynfG-6d5-FCW54stsz6dLK0c9Qxggl103rjg6A`) — "כיתה פלוס
+  מסד נתונים": טאבים `מורים`, `roles`, `subjects` (subject_id, name, icon,
+  teacher_url, student_url, status, enrollment_sheet_id).
+- `BAGRUT_SHEET_ID` (`1ac5OZq97hV9SIwvONfKpInmLhzRqVcANhNpv8XJMZ6I`) — "כיתה פלוס
+  — קבוצות: תיירות בגרות": טאבים `students` (roster לפי מורה), `progress`
+  (ציונים/ניסיונות לכל תלמיד+יחידה), `knowledge_base` (טקסט מחולץ מכל קבצי
+  ההוראה, מתעדכן אוטומטית פעם ביום). יש גם טאב `groups` ריק/לא-בשימוש (טעות
+  היסטורית מ-`addSubject`, לא למחוק, פשוט להתעלם).
+
+**מוסכמות קוד (ב-code.gs, לשימוש חוזר)**: `sheetToObjects(sheet)`,
+`appendRow(sheet, obj)`, `getHeaders(sheet)`, `ensureSheetWithHeaders(ss, name,
+headers)`, `requireRole(email, roles)`, `getRoles(ss, email)`, `withLock(fn)`,
+`stripInvisible_(email)` (ניקוי RTL/BOM לפני השוואת מיילים), `respond(data)`,
+`callGemini(systemPrompt, message)` (כבר קיים, שולף מפתח מ-Script Properties).
+
+**דגם הרשאות**: `doPost` מאמת טוקן גוגל רק לפעולות שרשומות במערך
+`protectedActions` (ואז `body.verifiedEmail` מוזן). `askBagrutBot` **בכוונה לא**
+ברשימה הזו — היא endpoint פתוח בלי login, כי הווידג'ט יושב ב-tourism11 הציבורי.
+
+**הרחבת enrollment**: `SUBJECT_ENROLLMENT_CHECKERS` במפה `{tourism:
+checkTourismEnrollment_, tourism_bagrut: checkBagrutEnrollment_}` — כל מקצוע
+חדש = שורה אחת + checker פונקציה, בלי לגעת בקיימים.
+
+## דפוס עבודה לאזור חדש (לפי מה שנעשה במישור החוף)
+
+1. לקרוא את כל חומרי המקור לאזור מתיקיית `חבלים/<אזור>` בדרייב.
+2. להעמיק/לתקן את התוכן הטקסטואלי הקיים בעמוד ה-HTML של האזור (`sites-table`,
+   `.card` וכו') על סמך המקורות.
+3. להוסיף/להרחיב בוחן (`.quiz-box`, `QUIZ_DATA` ב-JS) מתוך שאלות אמיתיות בחומר.
+4. להוסיף תיבות `.bagrut-real` עם שאלות בגרות אמיתיות מהמקור (docx של "שאלות
+   בגרות") + `.btn-hint` (מזין את הבוט במצב `hint`).
+5. לאמת syntax (`node --check` על ה-`<script>` המחולץ) + איזון תגיות לפני push.
+6. Commit + push ישירות ל-`main` בריפו הזה (יש git push access אמיתי, אין צורך
+   ב-PR אלא אם המשתמש מבקש).
+7. **אין לי גישת דפדפן/תצוגה חזותית** — לא ניתן לבדוק ויזואלית איך זה נראה בפועל.
+   כל אימות ויזואלי סופי נשאר על המשתמש או על B.
+
+הבוט (`askBagrutBot`) והדשבורד (`teacher/`, `student/`) כלליים לכל האתר — לא
+צריך שינוי קוד בקאנד לאזור חדש, רק תוכן ב-HTML. `BAGRUT_UNITS` ב-`bagrut.gs`
+כן צריך עדכון (הוספת unit_id חדש) כשמוסיפים בוחן לאזור נוסף — זו תוספת דורשת
+מעבר בתיקיית התיאום (B).
