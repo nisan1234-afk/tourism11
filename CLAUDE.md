@@ -90,6 +90,12 @@
 **לפני שממשיכים** — לקרוא את ה-README הזה כדי להבין את הפרוטוקול, ולבדוק אילו
 מסמכים כבר קיימים/בוצעו לפני יצירת מסמך חדש.
 
+**סטטוס נוכחי (מאומת מהיומנים)**: 01 (דשבורד+ enrollment) ו-02 (בוט חומר לימוד,
+כולל תיקון Drive.Files.delete→remove ש-B מצא) **בוצעו במלואם ואומתו קצה-לקצה** —
+הבקאנד חי בפועל, הבוט עונה מהחומר האמיתי וממנע מידע חיצוני, knowledge_base מכיל
+35 קבצים סרוקים. 03 (הרחבת BAGRUT_UNITS ל-5 יחידות, אחרי שנוספו QUIZ_DATA לכל
+האזורים) — **ממתין לביצוע B**, שינוי חד-שורתי ממוקד.
+
 **הפרויקט**: `https://script.google.com/d/1ldbT0kIL8ghtOGrZWJ1xlcw0GJMQ_2rjJGXFpyLbI13vjU8pjzBnk7Pi/edit`
 (נגיש רק ל-B, לא לי — אני יכול לקרוא אותו כקובץ Drive עם
 `download_file_content` + `exportMimeType: application/vnd.google-apps.script+json`,
@@ -138,6 +144,12 @@ checkTourismEnrollment_, tourism_bagrut: checkBagrutEnrollment_}` — כל מק�
    כל אימות ויזואלי סופי נשאר על המשתמש או על B.
 
 הבוט (`askBagrutBot`) והדשבורד (`teacher/`, `student/`) כלליים לכל האתר — לא
-צריך שינוי קוד בקאנד לאזור חדש, רק תוכן ב-HTML. `BAGRUT_UNITS` ב-`bagrut.gs`
-כן צריך עדכון (הוספת unit_id חדש) כשמוסיפים בוחן לאזור נוסף — זו תוספת דורשת
-מעבר בתיקיית התיאום (B).
+צריך שינוי קוד בקאנד לאזור חדש, רק תוכן ב-HTML. שני עדכונים נדרשים כשמוסיפים
+בוחן ליחידה/אזור נוסף:
+1. **`student/index.html`** (`UNIT_CONTENT` ב-JS) — להעתיק (לא להמציא מחדש) את
+   אותו `QUIZ_DATA` שכבר נכתב בדף הציבורי של האזור, ולהוסיף `studyUrl`. זה שינוי
+   פרונטאנד טהור, אני יכול לבצע ולדחוף אותו לבד בלי B.
+2. **`BAGRUT_UNITS` ב-`bagrut.gs`** — להוסיף `{unit_id, name, total_questions}`
+   תואם (אותו `unit_id` כמו המפתח ב-`UNIT_CONTENT`). זו תוספת בקאנד, דורשת מעבר
+   בתיקיית התיאום (B) + Deploy. בלי זה, היחידה קיימת בפרונט אבל לא תופיע בדשבורד
+   כי `getBagrutMyProgress`/`getBagrutTeacherDashboard` מחזירים רק את מה שרשום שם.
