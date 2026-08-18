@@ -181,11 +181,359 @@
 
   <p class="source-note">מבוסס על מסמך "מושגים לבגרות 2026" מתוך חומרי המורה. פרקים 3–5 (שיווק) הם השלמה לקראת יחידת הלימוד המתקדמת; ליבת הבחינה בכיתה יא׳ היא פרק 0.</p>
 
+  <div class="section">
+    <div class="section-title">🧠 תרגול אינטראקטיבי</div>
+    <div class="section-sub">בחרו אשכול ומצב תרגול — כרטיסיות לשליפה מהזיכרון, משחק התאמה, או חידון</div>
+
+    <div class="cluster-tabs" id="clusterTabs"></div>
+    <div class="practice-modes">
+      <button class="practice-mode-btn active" onclick="setMode('flash', this)">🃏 כרטיסיות</button>
+      <button class="practice-mode-btn" onclick="setMode('match', this)">🔗 התאמה</button>
+      <button class="practice-mode-btn" onclick="setMode('quiz', this)">📝 חידון</button>
+    </div>
+
+    <div id="practiceArea"></div>
+  </div>
+
 </main>
 
 <footer class="site-footer">
   אתר לימוד פרטי למגמת תיירות · כיתה יא׳ · מבוסס על חומרי הוראה שנאספו ונערכו לצורכי חזרה לבגרות
 </footer>
+
+<script>
+const CLUSTER_NAMES = [
+  '⭐ 0. רקע והיסטוריה',
+  '✈️ 1. תעופה ומדיניות',
+  '🌍 2. ייחוד ישראל',
+  '💰 3. היצע וביקוש',
+  '🎯 4. שיווק מטרה',
+  '📦 5. מוצר ומותג'
+];
+
+const CONCEPTS = [
+  { cluster: 0, term: 'ייצוא גלוי', def: 'ייצוא של סחורות ומוצרים פיזיים ובעלי משקל (חיטה, עצים וכד\'). התשלום מתקבל במטבע זר.' },
+  { cluster: 0, term: 'ייצוא סמוי', def: 'שירותים שהמדינה מספקת למדינה אחרת (בנקאות, ביטוח, שירותים רפואיים לאזרחי חוץ, ידע ומחקר). התיירות היא ייצוא סמוי — היא מכניסה מטבע זר דרך שירותים לתיירים במלונות ובמסעדות.' },
+  { cluster: 0, term: 'דליפה', def: 'בעיה אופיינית למדינות מתפתחות: דליפת רווחי תיירות לגופים מחוץ למדינה, כאשר בעלי הון זרים משקיעים באתר ואילו תושבי המקום נהנים ממנו מעט.' },
+  { cluster: 0, term: 'Peak Season', def: 'העונה הבוערת — הזמן בשנה שבו הכי הרבה אנשים מטיילים, שיא עונת התיירות. המחירים בדרך כלל גבוהים.' },
+  { cluster: 0, term: 'Off Season', def: 'העונה החלשה בתיירות, מחוץ לעונת השיא. המחירים נוחים יותר כדי למשוך תיירים גם בזמן זה.' },
+  { cluster: 0, term: 'מכפיל תיירותי (מכפיל הכנסות)', def: 'כל דולר שמכניס תייר למדינה מתחלק ומופץ ליחידות עסקיות רבות — מלון, מסעדה, מונית, דוכן פלאפל, חנות מזכרות — ובכך מכפיל את השפעתו על הכלכלה המקומית.' },
+  { cluster: 0, term: 'פרויקט תגלית (Birthright)', def: 'מאפשר לכל צעיר וצעירה יהודיים בני 18–26 סיור חינוכי חינם בן עשרה ימים בישראל, כולל מפגש עם חיילי צה"ל בני גילם. מטרות: חיבור לשורשים, מניעת התבוללות, עידוד עלייה.' },
+  { cluster: 0, term: 'תיירות פנים (Domestic)', def: 'יציאת הפרט מחוץ לתחום מגוריו ועבודתו, בתוך גבולות ארצו, לשם הנאה.' },
+  { cluster: 0, term: 'תיירות נכנסת (Incoming)', def: 'תנועת תיירים המגיעים ממדינה אחרת אל המדינה שבה הם קבעו את יעד ביקורם.' },
+  { cluster: 0, term: 'תיירות יוצאת (Outgoing)', def: 'יציאת הפרט אל מחוץ לתחומי ארצו — לשם הנאה, עסקים או לימודים.' },
+  { cluster: 0, term: 'מבקר יום', def: 'תייר השוהה במקום עד 24 שעות, ללא לינה.' },
+  { cluster: 0, term: 'נוסע בשיוט', def: 'תייר המבקר ביעדים שונים תוך כדי הפלגה; האונייה משמשת כמלון צף, ובעגינה מוסעים הנוסעים לאטרקציות תיירותיות.' },
+  { cluster: 0, term: 'גיאופוליטי', def: 'תחום המנתח את ההשפעות ההדדיות של גאוגרפיה, פוליטיקה, כלכלה ויחסים בין-לאומיים. בתיירות — תפיסת הביטחון משפיעה ישירות על התיירות הנכנסת.' },
+  { cluster: 1, term: 'הודעה (Announcement)', def: 'איסור מוחלט על נסיעה ליעד מסוים. אזרח שמתעלם ממנה לוקח על עצמו אחריות אישית מלאה.' },
+  { cluster: 1, term: 'אזהרה (Warning)', def: 'אזהרת מסע שמפרסמת המדינה — המלצה שלא להגיע ליעד מסוים (בניגוד ל"הודעה" — אינה איסור מוחלט).' },
+  { cluster: 1, term: 'אירוע מגה (Mega Event)', def: 'אירוע בקנה מידה גדול שזמן התרחשותו קצר, דורש מתקנים מיוחדים ובעל השלכות ארוכות טווח — כמו אולימפיאדות ותערוכות Expo עולמיות.' },
+  { cluster: 1, term: 'שמיים פתוחים (Open Skies)', def: 'הסכם בין מדינות המאפשר למובילים הלאומיים שלהן לנחות בשטח המדינה האחרת ללא הגבלת תדירות טיסות, סוג מטוס או מחיר.' },
+  { cluster: 1, term: 'שמיים מוגבלים', def: 'התנועה מוגבלת ליכולת המושבים שהמוביל הלאומי בוחר להציע; יעדי הטיסה נקבעים לפי שיקולי רווח והפסד של החברה.' },
+  { cluster: 1, term: 'Code Sharing', def: 'הסכם בין חברות תעופה שבו קוד הטיסה של אחת תקף גם לטיסה בחברה האחרת — מאפשר איחוד טיסות והגדלת רווחיות.' },
+  { cluster: 1, term: 'הסכמים בילטרליים', def: 'הסכם דו-צדדי בין שתי מדינות המאפשר מדיניות "שמיים פתוחים" — טיסה חופשית לשטח המדינה האחרת.' },
+  { cluster: 1, term: 'טיסות צ\'רטר', def: 'טיסות שחוכרות חברות תיירות מקומיות לתקופה מוגדרת בעונת הנופש, על בסיס מכירת מושבים; מחירן גמיש יותר.' },
+  { cluster: 1, term: 'כושר נשיאה', def: 'השיעור המרבי של שימוש שניתן לעשות באתר/משאב מבלי לפגוע בתדמיתו או באפשרות לעשות בו שימוש דומה בעתיד.' },
+  { cluster: 2, term: 'תיירות עסקים (Business Tourism)', def: 'נוסע יוצא ממקום מגוריו למטרות עבודה/עסקים — פגישות, כנסים, ביקורי לקוחות, ישיבות הנהלה.' },
+  { cluster: 2, term: 'תיירות כנסים', def: 'נסיעה ליעד אחר במטרה להשתתף בכנס מקצועי/מדעי — לרוב כחלק מהעבודה, לצורך העשרה מקצועית ונטוורקינג.' },
+  { cluster: 2, term: 'תערוכות וירידים', def: 'תיירות עסקית שבה משתתפים באירועים מסחריים כמו תערוכות מוצרים וירידי סחר, במטרה להציג חידושים וליצור קשרים עסקיים.' },
+  { cluster: 2, term: 'אגריטק (Agritech)', def: 'התערוכה החקלאית הבינלאומית הגדולה בישראל, מתקיימת אחת לשלוש שנים ומציגה חידושים טכנולוגיים בחקלאות והשקיה.' },
+  { cluster: 2, term: 'IMTM', def: 'International Mediterranean Tourism Market — יריד המציג אפשרויות תיור במדינות הים התיכון, מתקיים בפברואר בתל אביב.' },
+  { cluster: 2, term: 'יריד הספרים הבינלאומי', def: 'אירוע תרבותי-עסקי בינלאומי בישראל מאז 1963, לחשיפת ספרות וסופרים ולשיתופי פעולה בין מו"לים.' },
+  { cluster: 2, term: 'סיור תמריץ', def: 'מוצר תיירותי הניתן כתגמול לעובד/י מצטיינים על הישגים — תגמול הבא לידי ביטוי בטיול ולא רק בכסף.' },
+  { cluster: 2, term: 'סיור מקצועי', def: 'סיור לקבוצות הומוגניות בעלות רקע מקצועי משותף (רופאים, מורים, חקלאים) עם תוכנית המותאמת לתחום.' },
+  { cluster: 2, term: 'תיירות בתעשייה', def: 'ביקור והתבוננות בתהליך הייצור התעשייתי במפעלים — מתוך סקרנות צרכנית או עניין מקצועי.' },
+  { cluster: 2, term: 'תיירות כפרית', def: 'תיירות באזורים כפריים/חקלאיים שבה התייר חווה את אורח החיים הכפרי, הנוף והתרבות המקומית.' },
+  { cluster: 2, term: 'תיירות עירונית', def: 'תיירות המתמקדת בביקור בערים לצורך חוויה תרבותית, בילוי, קניות, עסקים ואתרים היסטוריים.' },
+  { cluster: 2, term: 'תיירות אקולוגית', def: 'תיירות באזורים טבעיים ושמורים במטרה לחוות וללמוד על הטבע תוך צמצום הפגיעה בסביבה.' },
+  { cluster: 2, term: 'WTO', def: 'World Tourism Organization — ארגון בינלאומי מסונף לאו"ם (מדריד), אוסף ומנתח נתוני תיירות עולמיים ומפרסם תחזיות.' },
+  { cluster: 3, term: 'שיווק', def: 'תהליך תכנון, יצירה, קידום והפצה של מוצרים/שירותים, שמטרתו לזהות ולספק צרכי לקוחות תוך השגת מטרות הארגון.' },
+  { cluster: 3, term: 'תעשיית התיירות', def: 'כל המוצרים והשירותים המוצעים לתיירים ולעוסקים בסיוע להגיע ליעדם ולשרת את צורכיהם.' },
+  { cluster: 3, term: 'עסקת חליפין', def: 'השגת מוצר מבוקש מאדם אחר תמורת הצעת מוצר אחר — ברוב המקרים כיום כרוכה בתשלום כסף.' },
+  { cluster: 3, term: 'עסקת ברטר', def: 'חליפין בטובין — סחורות תמורת סחורות, למשל ציוד תמורת חדרי מלון.' },
+  { cluster: 3, term: 'שוק', def: 'מקום/מסגרת שבה נפגשים קונים ומוכרים — כלל הלקוחות בפועל ובכוח בעלי צורך משותף המעוניינים בחליפין.' },
+  { cluster: 3, term: 'שוק התיירות', def: 'מערכת יחסים בין מוכרים, קונים ומתווכים של מוצרי נסיעות; מרכיב השירות דומיננטי בו והוא פגיע לשינויים ביטחוניים/כלכליים.' },
+  { cluster: 3, term: 'היצע', def: 'כמות המוצר המוצעת למכירה על ידי היצרנים — מושפעת ממטרת היצרן ומרמת הידע הטכנולוגי.' },
+  { cluster: 3, term: 'ביקוש', def: 'הכמות שהצרכנים מוכנים לרכוש — מושפע מהכנסת הצרכן, ממחיר המוצר, ממחירי מוצרים מתחרים ומשינויי טעם.' },
+  { cluster: 3, term: 'ביקוש קשיח', def: 'מקרה קיצוני שבו משתנה המחיר אך לא משתנה הכמות המבוקשת — לדוגמה שוק התרופות או הטבק.' },
+  { cluster: 3, term: 'שיווי משקל', def: 'נקודת המפגש בין ההיצע לביקוש — כל הצרכנים שדרשו במחיר נתון קיבלו, וכל היצרנים שרצו למכור במחיר זה מצאו קונה.' },
+  { cluster: 3, term: 'מוצר מוחשי', def: 'סחורות שאפשר לראות, לגעת ולהחזיק — כמו רהיטים, בגדים, מזון.' },
+  { cluster: 3, term: 'מוצר לא מוחשי', def: 'שירות או רעיון שאי אפשר לגעת בו פיזית — שירותי תיירות הם דוגמה למוצר בלתי מוחשי.' },
+  { cluster: 3, term: 'תועלת זמן', def: 'זמינות ושעות פתיחה המאפשרות לצרוך את המוצר במועד הרצוי — למשל אתר הפתוח בערבים ובסופ"ש.' },
+  { cluster: 3, term: 'תועלת צורה', def: 'ערך שנוסף למוצר על ידי שינוי צורתו הפיזית כדי להתאימו טוב יותר לצורך הלקוח.' },
+  { cluster: 3, term: 'תועלת מידע', def: 'מוצר שיש עליו מידע (למשל דרך פרסום/כתבות) הוא מוצר שהצרכן ירכוש ביתר קלות.' },
+  { cluster: 3, term: 'תועלת מקום', def: 'מיקום נקודת המכירה/השירות משפיע על ההחלטה לקנות — למשל קרבה למרכזי תחבורה וחניה.' },
+  { cluster: 3, term: 'ביקוש שלילי', def: 'מצב שבו השוק מתנגד למוצר ונמנע ממנו (למשל טיפול שיניים) — נדרש שיווק ממיר.' },
+  { cluster: 3, term: 'חוסר ביקוש', def: 'השוק אינו מגלה עניין במוצר שחסר לו ערך מוכר או שחסרה עליו מודעות — נדרש שיווק ממריץ.' },
+  { cluster: 3, term: 'ביקוש סמוי', def: 'אנשים מעוניינים במוצר שאינו קיים עדיין במציאות — ההזדמנות הטובה ביותר למשווק; נדרש שיווק מפתח.' },
+  { cluster: 3, term: 'ביקוש בשפל', def: 'פלחי שוק דוחים מוצר שהיה פופולרי בעבר, לדוגמה תיירות ביעד במשבר פוליטי — נדרש שיווק מחודש.' },
+  { cluster: 3, term: 'ביקוש בלתי סדיר', def: 'הביקוש מושפע מעונתיות (כמו בתי מלון) — נדרש שיווק מתואם באמצעות המחרה גמישה ותמריצים.' },
+  { cluster: 3, term: 'ביקוש מלא', def: 'המצב האופטימלי — הביקוש זהה לרמת ההיצע; נדרש שיווק משמר שמחזיק יד על הדופק.' },
+  { cluster: 3, term: 'עודף ביקוש', def: 'הביקוש עולה על ההיצע — נראה אידיאלי, אך צרכן שלא קיבל את מבוקשו עלול לפנות למתחרה; נדרש שיווק מצמצם.' },
+  { cluster: 3, term: 'ביקוש בלתי רצוי', def: 'ביקוש שכל רמה שלו אינה רצויה (למשל סמים) — נדרש שיווק נגדי, הסברה ופרסום הסיכונים.' },
+  { cluster: 4, term: 'שיווק מטרה', def: 'קביעת שווקי מטרה והתאמת תמהיל השיווק לצורכי הלקוחות בשווקים אלה, באופן רווחי לחברה.' },
+  { cluster: 4, term: 'תמהיל השיווק', def: 'כלי לניהול האסטרטגיה השיווקית, מחולק לארבעה תחומים: מוצר, מחיר, הפצה וקידום מכירות.' },
+  { cluster: 4, term: 'פילוח שוק', def: 'חלוקת כלל הלקוחות לקבוצות (פלחים) בעלות צרכים דומים ומאפייני התנהגות צרכנית משותפים.' },
+  { cluster: 4, term: 'פלח שוק', def: 'קבוצה מזוהה בתוך השוק, למשל לפי גיל/מין/השכלה (דמוגרפי) או לפי מטרת הנסיעה.' },
+  { cluster: 4, term: 'שיווק המוני', def: 'שיווק למספר רב של אנשים, בהנחה ששוק הצרכנים הומוגני ומגיב באותו אופן לכל מוצר.' },
+  { cluster: 4, term: 'שיווק הנישות', def: 'שיווק לפלח שוק קטן שאינו כדאי לחברות גדולות — נישה שמשווק קטן יכול לספק.' },
+  { cluster: 4, term: 'פילוח דמוגרפי', def: 'חלוקה לפי גיל, מין, השכלה, דת, עדה, הכנסה, אתניות או מחזור חיי המשפחה.' },
+  { cluster: 4, term: 'פילוח גיאוגרפי', def: 'חלוקה לפי מקום מגורים ומאפייני אקלים/תרבות/הרגלים הנגזרים ממנו.' },
+  { cluster: 4, term: 'פילוח התנהגותי', def: 'חלוקה לפי מקריות, שיעורי שימוש, מצב נאמנות והטבות — למשל מטרת עסקית מול נופש.' },
+  { cluster: 4, term: 'פילוח על פי מטרת הנסיעה', def: 'חלוקת תיירים לפי הסיבה/מטרה העיקרית לנסיעה — נופש, עסקים, ביקור קרובים ועוד.' },
+  { cluster: 4, term: 'שיווק אחיד', def: 'החברה מתעלמת מהבדלים בין פלחים ופונה לשוק כולו בהצעה אחת, המדגישה את המשותף.' },
+  { cluster: 4, term: 'שיווק מבודל', def: 'החברה בוחרת מספר פלחי שוק ובונה תמהיל שיווק נפרד ומותאם לכל פלח.' },
+  { cluster: 4, term: 'שיווק מרוכז', def: 'ריכוז כל המשאבים בפלח שוק אחד בלבד — נפוץ בקרב משווקים קטנים המוצאים נישה.' },
+  { cluster: 5, term: 'פריט מוצר', def: 'מוצר בעל אפיון מסוים, רשום בנפרד ברשימת המוצרים של המשווק.' },
+  { cluster: 5, term: 'קו מוצרים', def: 'קבוצת מוצרים הקשורים זה לזה — מבצעים פונקציה דומה, נמכרים לאותה קבוצת לקוחות ובאותם ערוצים.' },
+  { cluster: 5, term: 'לב המוצר', def: 'התועלת הבסיסית/המסר המרכזי שהמוצר עונה עליו — מה הקונה באמת רוצה לקנות.' },
+  { cluster: 5, term: 'תמהיל המוצרים', def: 'מערך כלל המוצרים שהחברה מוכרת, בעל מידות רוחב, אורך, עומק ואחידות.' },
+  { cluster: 5, term: 'רוחב תמהיל', def: 'כמה קווי מוצר שונים יש לחברה.' },
+  { cluster: 5, term: 'עומק תמהיל', def: 'כמה גרסאות מוצעות בכל קו מוצר.' },
+  { cluster: 5, term: 'אורך תמהיל', def: 'סך כל המוצרים הנמצאים תחת כל קווי המוצרים יחד.' },
+  { cluster: 5, term: 'חבילת תיירות (Package)', def: 'מספר שירותי נסיעות מסופקים ע"י ספקים שונים ומוצגים כמוצר אחד במחיר אחד — טיסה, העברות, מלון, ארוחות וכניסה לאתרים.' },
+  { cluster: 5, term: 'מחזור חיי המוצר', def: 'חמישה שלבים: הצגה, צמיחה, בשלות, רוויה, דעיכה.' },
+  { cluster: 5, term: 'מותג', def: 'מוצר הניתן לזיהוי בקלות (שם, לוגו, צבע) — יוצר בידול, אמון וערך כלכלי.' },
+  { cluster: 5, term: 'מיתוג', def: 'ייחוד המוצר לעומת מתחרים ותוספת ערך נראית לעין — משפיע על המחיר ועל הרווח.' }
+];
+
+let currentCluster = 0;
+let currentMode = 'flash';
+
+function initClusterTabs() {
+  const wrap = document.getElementById('clusterTabs');
+  wrap.innerHTML = CLUSTER_NAMES.map((name, i) =>
+    `<button class="cluster-tab ${i === 0 ? 'active' : ''}" onclick="setCluster(${i}, this)">${name}</button>`
+  ).join('') + `<button class="cluster-tab" onclick="setCluster(-1, this)">🌐 כל האשכולות (לחידון)</button>`;
+}
+
+function setCluster(i, btn) {
+  currentCluster = i;
+  document.querySelectorAll('.cluster-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPractice();
+}
+
+function setMode(mode, btn) {
+  currentMode = mode;
+  document.querySelectorAll('.practice-mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPractice();
+}
+
+function clusterConcepts() {
+  return currentCluster === -1 ? CONCEPTS : CONCEPTS.filter(c => c.cluster === currentCluster);
+}
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ===== כרטיסיות ===== */
+let flashDeck = [], flashIndex = 0, flashKnown = [];
+function renderFlash() {
+  flashDeck = shuffle(clusterConcepts());
+  flashIndex = 0;
+  flashKnown = [];
+  showFlashcard();
+}
+function showFlashcard() {
+  const area = document.getElementById('practiceArea');
+  if (flashDeck.length === 0) { area.innerHTML = '<div class="empty-state">אין מושגים באשכול הזה.</div>'; return; }
+  if (flashIndex >= flashDeck.length) {
+    area.innerHTML = `<div class="flashcard-wrap"><div class="flashcard-progress">סיימתם! ${flashKnown.filter(Boolean).length} מתוך ${flashDeck.length} סימנתם "ידעתי".</div>
+      <div class="flashcard-actions"><button class="btn-know" onclick="renderFlash()">🔁 סבב חדש</button></div></div>`;
+    return;
+  }
+  const item = flashDeck[flashIndex];
+  area.innerHTML = `
+    <div class="flashcard-wrap">
+      <div class="flashcard-progress">כרטיס ${flashIndex + 1} מתוך ${flashDeck.length}</div>
+      <div class="flashcard" id="flashcardEl" onclick="flipFlashcard()">
+        <div>${item.term}</div>
+        <div class="flashcard-hint">לחצו להפוך</div>
+      </div>
+      <div class="flashcard-actions">
+        <button class="btn-dontknow" onclick="nextFlashcard(false)">❌ לא ידעתי</button>
+        <button class="btn-know" onclick="nextFlashcard(true)">✔ ידעתי</button>
+      </div>
+    </div>`;
+}
+function flipFlashcard() {
+  const el = document.getElementById('flashcardEl');
+  const item = flashDeck[flashIndex];
+  const flipped = el.classList.toggle('flipped');
+  el.innerHTML = flipped
+    ? `<div>${item.def}</div>`
+    : `<div>${item.term}</div><div class="flashcard-hint">לחצו להפוך</div>`;
+}
+function nextFlashcard(known) {
+  flashKnown[flashIndex] = known;
+  flashIndex++;
+  showFlashcard();
+}
+
+/* ===== התאמה ===== */
+let matchPairs = [], matchSelectedTerm = null, matchSelectedDef = null, matchDone = 0;
+function renderMatch() {
+  const pool = shuffle(clusterConcepts()).slice(0, 6);
+  matchPairs = pool;
+  matchSelectedTerm = null; matchSelectedDef = null; matchDone = 0;
+  const terms = shuffle(pool);
+  const defs = shuffle(pool);
+  const area = document.getElementById('practiceArea');
+  if (pool.length < 2) { area.innerHTML = '<div class="empty-state">צריך לפחות 2 מושגים באשכול לתרגול התאמה.</div>'; return; }
+  area.innerHTML = `
+    <div class="match-grid">
+      <div class="match-col">${terms.map(t => `<div class="match-item" data-term="${escapeAttr(t.term)}" onclick="selectMatch(this, 'term')">${t.term}</div>`).join('')}</div>
+      <div class="match-col">${defs.map(d => `<div class="match-item" data-term="${escapeAttr(d.term)}" onclick="selectMatch(this, 'def')">${d.def}</div>`).join('')}</div>
+    </div>
+    <div class="match-status" id="matchStatus"></div>`;
+}
+function selectMatch(el, side) {
+  if (el.classList.contains('matched')) return;
+  if (side === 'term') {
+    if (matchSelectedTerm) matchSelectedTerm.classList.remove('selected');
+    matchSelectedTerm = el;
+  } else {
+    if (matchSelectedDef) matchSelectedDef.classList.remove('selected');
+    matchSelectedDef = el;
+  }
+  el.classList.add('selected');
+  if (matchSelectedTerm && matchSelectedDef) {
+    if (matchSelectedTerm.dataset.term === matchSelectedDef.dataset.term) {
+      matchSelectedTerm.classList.remove('selected'); matchSelectedDef.classList.remove('selected');
+      matchSelectedTerm.classList.add('matched'); matchSelectedDef.classList.add('matched');
+      matchDone++;
+      matchSelectedTerm = null; matchSelectedDef = null;
+      const status = document.getElementById('matchStatus');
+      if (matchDone === matchPairs.length) status.textContent = '🎉 סיימתם את כל ההתאמות!';
+      else status.textContent = `${matchDone} מתוך ${matchPairs.length}`;
+    } else {
+      matchSelectedTerm.classList.add('wrong'); matchSelectedDef.classList.add('wrong');
+      setTimeout(() => {
+        matchSelectedTerm.classList.remove('selected', 'wrong');
+        matchSelectedDef.classList.remove('selected', 'wrong');
+        matchSelectedTerm = null; matchSelectedDef = null;
+      }, 600);
+    }
+  }
+}
+function escapeAttr(s) { return String(s).replace(/"/g, '&quot;'); }
+
+/* ===== חידון ===== */
+let quizItems = [], quizAnswers = {};
+function renderQuiz() {
+  const pool = shuffle(clusterConcepts()).slice(0, 10);
+  quizItems = pool.map(item => {
+    const sameCluster = CONCEPTS.filter(c => c.cluster === item.cluster && c.term !== item.term);
+    const distractors = shuffle(sameCluster).slice(0, 3).map(c => c.def);
+    while (distractors.length < 3) distractors.push(shuffle(CONCEPTS.filter(c => c.term !== item.term))[0].def);
+    const opts = shuffle([item.def, ...distractors]);
+    return { term: item.term, opts, correct: opts.indexOf(item.def) };
+  });
+  quizAnswers = {};
+  const area = document.getElementById('practiceArea');
+  if (quizItems.length === 0) { area.innerHTML = '<div class="empty-state">אין מספיק מושגים לחידון באשכול הזה.</div>'; return; }
+  area.innerHTML = `
+    <div class="quiz-box"><div id="conceptQuizContainer"></div>
+      <div class="quiz-actions">
+        <button onclick="checkConceptQuiz()">בדיקת תשובות</button>
+        <button onclick="renderQuiz()">חידון חדש</button>
+        <span class="quiz-score" id="conceptQuizScore"></span>
+      </div>
+    </div>`;
+  document.getElementById('conceptQuizContainer').innerHTML = quizItems.map((item, qi) => `
+    <div class="quiz-q" id="cq-${qi}">
+      <div class="q-title">${qi + 1}. מהי ההגדרה הנכונה של "${item.term}"?</div>
+      <div class="q-opts">
+        ${item.opts.map((opt, oi) => `<button class="q-opt" onclick="selectConceptOpt(${qi}, ${oi})" id="cqopt-${qi}-${oi}">${opt}</button>`).join('')}
+      </div>
+    </div>`).join('');
+}
+function selectConceptOpt(qi, oi) {
+  quizAnswers[qi] = oi;
+  quizItems[qi].opts.forEach((_, i) => document.getElementById('cqopt-' + qi + '-' + i).classList.remove('selected'));
+  document.getElementById('cqopt-' + qi + '-' + oi).classList.add('selected');
+}
+function checkConceptQuiz() {
+  let score = 0;
+  quizItems.forEach((item, qi) => {
+    item.opts.forEach((_, oi) => {
+      const btn = document.getElementById('cqopt-' + qi + '-' + oi);
+      btn.disabled = true;
+      if (oi === item.correct) btn.classList.add('correct');
+      else if (quizAnswers[qi] === oi) btn.classList.add('wrong');
+    });
+    if (quizAnswers[qi] === item.correct) score++;
+  });
+  const scoreEl = document.getElementById('conceptQuizScore');
+  scoreEl.textContent = 'הציון שלכם: ' + score + ' מתוך ' + quizItems.length + ' (' + Math.round(100 * score / quizItems.length) + '%)';
+  scoreEl.classList.add('show');
+}
+
+function renderPractice() {
+  if (currentMode === 'flash') renderFlash();
+  else if (currentMode === 'match') renderMatch();
+  else renderQuiz();
+}
+
+initClusterTabs();
+renderPractice();
+
+/* ===== בוט שאלות — עונה אך ורק מתוך חומר הלימוד בדרייב, לא ניגש לשום מקור חיצוני ===== */
+const BAGRUT_API_URL = 'https://script.google.com/macros/s/AKfycbwf3-MNZBBi64zXcNH7wfhBRoEBl9brtQ9QRI4Won5RmUIOrl_WBivN6uI5NAp6Mc0h/exec';
+
+async function callBagrutBot(question, mode, bagrutQuestion) {
+  const res = await fetch(BAGRUT_API_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'askBagrutBot', question, mode: mode || 'qa', bagrut_question: bagrutQuestion || '' })
+  });
+  const data = await res.json();
+  if (!data.ok) throw new Error(data.error);
+  return data.data.reply;
+}
+function toggleBotWidget(open) { document.getElementById('botWidget').classList.toggle('open', open); }
+function appendBotMsg(role, text) {
+  const log = document.getElementById('botLog');
+  const div = document.createElement('div');
+  div.className = 'bot-msg bot-msg-' + role;
+  div.textContent = text;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+  return div;
+}
+async function sendBotQuestion(e) {
+  if (e) e.preventDefault();
+  const input = document.getElementById('botInput');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  appendBotMsg('user', q);
+  const pending = appendBotMsg('bot', '...חושב, רגע');
+  try { pending.textContent = await callBagrutBot(q, 'qa', ''); }
+  catch (err) { pending.textContent = 'שגיאה: ' + err.message; }
+}
+</script>
+
+<button class="bot-toggle" onclick="toggleBotWidget(true)">💬 שאלו אותי / למדו איתי</button>
+<div class="bot-widget" id="botWidget">
+  <div class="bot-widget-head">
+    <strong>🎓 עוזר הלמידה — מושגים</strong>
+    <button class="bot-widget-close" onclick="toggleBotWidget(false)">✕</button>
+  </div>
+  <div class="bot-widget-sub">עונה רק על סמך חומר הלימוד האמיתי — לא ממציא ולא ניגש למקורות חיצוניים</div>
+  <div class="bot-log" id="botLog"></div>
+  <form class="bot-widget-form" onsubmit="sendBotQuestion(event)">
+    <input type="text" id="botInput" placeholder="שאלו כל דבר על המושגים..." autocomplete="off" />
+    <button type="submit">שלח</button>
+  </form>
+</div>
 
 </body>
 </html>

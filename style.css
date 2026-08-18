@@ -667,3 +667,51 @@ footer.site-footer {
   .bot-toggle, .bot-widget { left: 12px; bottom: 12px; }
   .bot-widget { width: calc(100vw - 24px); }
 }
+
+/* ===== מושגים — אשכולות, כרטיסיות, התאמה, חידון ===== */
+.cluster-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.cluster-tab {
+  padding: 9px 16px; border-radius: 20px; border: 1px solid var(--border);
+  background: var(--card); color: var(--ink); font-family: inherit; font-size: 13px;
+  font-weight: 600; cursor: pointer; transition: all .2s var(--ease);
+}
+.cluster-tab:hover { border-color: var(--teal); }
+.cluster-tab.active { background: var(--teal); border-color: var(--teal); color: #fff; }
+
+.practice-modes { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.practice-mode-btn {
+  padding: 8px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--sand);
+  color: var(--ink); font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+}
+.practice-mode-btn.active { background: var(--terracotta); border-color: var(--terracotta); color: #fff; }
+
+/* כרטיסיות */
+.flashcard-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 10px 0 20px; }
+.flashcard {
+  width: min(480px, 100%); min-height: 180px; border-radius: 16px; border: 1px solid var(--border);
+  background: var(--card); box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center;
+  text-align: center; padding: 24px; cursor: pointer; font-size: 18px; font-weight: 700; position: relative;
+}
+.flashcard.flipped { background: linear-gradient(160deg, var(--sand), var(--card)); font-size: 15px; font-weight: 400; text-align: right; align-items: flex-start; }
+.flashcard-hint { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--muted, #7a6f66); }
+.flashcard-progress { font-size: 13px; color: var(--muted, #7a6f66); }
+.flashcard-actions { display: flex; gap: 10px; }
+.flashcard-actions button { padding: 10px 20px; border-radius: 10px; border: none; font-family: inherit; font-weight: 700; cursor: pointer; font-size: 13px; }
+.btn-know { background: rgba(14,124,123,0.12); color: var(--teal); border: 1px solid var(--teal) !important; }
+.btn-know:hover { background: var(--teal); color: #fff; }
+.btn-dontknow { background: rgba(193,98,45,0.12); color: var(--terracotta); border: 1px solid var(--terracotta) !important; }
+.btn-dontknow:hover { background: var(--terracotta); color: #fff; }
+
+/* התאמה */
+.match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.match-col { display: flex; flex-direction: column; gap: 8px; }
+.match-item {
+  padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--card);
+  font-size: 13.5px; cursor: pointer; text-align: right; transition: all .15s;
+}
+.match-item:hover { border-color: var(--teal); }
+.match-item.selected { border-color: var(--teal); background: rgba(14,124,123,0.1); }
+.match-item.matched { border-color: var(--success, #2e8b57); background: rgba(46,139,87,0.1); opacity: .6; cursor: default; pointer-events: none; }
+.match-item.wrong { border-color: var(--terracotta); background: rgba(193,98,45,0.15); }
+.match-status { text-align: center; margin-top: 14px; font-weight: 700; color: var(--teal); }
+@media (max-width: 640px) { .match-grid { grid-template-columns: 1fr; } }
