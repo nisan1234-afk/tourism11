@@ -146,6 +146,19 @@
 
   </div>
 
+  <div class="section">
+    <div class="section-title">🧠 בוחן ידע — חשיבותה של התיירות</div>
+    <div class="section-sub">20 שאלות מבוססות על חומרי הלימוד</div>
+    <div class="quiz-box">
+      <div id="quizContainer"></div>
+      <div class="quiz-actions">
+        <button onclick="checkQuiz()">בדיקת תשובות</button>
+        <button onclick="resetQuiz()">איפוס</button>
+        <span class="quiz-score" id="quizScore"></span>
+      </div>
+    </div>
+  </div>
+
   <p class="source-note">מבוסס על מצגות ומסמכי "חשיבותה של התיירות לישראל" (גדית סדן; מערכת השידורים הלאומית, ניר לוינסון) מתוך חומרי המורה.</p>
 
 </main>
@@ -153,6 +166,144 @@
 <footer class="site-footer">
   אתר לימוד פרטי למגמת תיירות · כיתה יא׳ · מבוסס על חומרי הוראה שנאספו ונערכו לצורכי חזרה לבגרות
 </footer>
+
+<script>
+const QUIZ_DATA = [
+  { q: 'לאיזה סוג ייצוא נחשבת התיירות הנכנסת?', opts: ['ייצוא גלוי', 'ייצוא סמוי', 'אינה נחשבת ייצוא כלל', 'ייבוא סמוי'], correct: 1,
+    explain: 'התיירות הנכנסת נחשבת ייצוא סמוי — מכירת שירותים (לינה, הסעדה, הדרכה) לתיירים, ולא מכירת סחורות פיזיות.' },
+  { q: 'מהו "מכפיל ההכנסות"?', opts: ['מס המוטל על תיירים', 'השפעת הוצאת תייר בודד המתפזרת בין עסקים רבים ומכפילה את השפעתה הכלכלית', 'שיעור הריבית על השקעות תיירות', 'מספר התיירים החוזרים לביקור נוסף'], correct: 1,
+    explain: 'מכפיל ההכנסות מודד כיצד הוצאה של תייר בודד מתחלקת בין עסקים רבים במשק (מלון, מסעדה, נהג ועוד), ובכך מכפילה את השפעתה הכלכלית.' },
+  { q: 'איזה אחוז מהתיירים מדווחים ששינו את דעתם על ישראל לטובה בעקבות הביקור (לפי הנתונים בעמוד)?', opts: ['23.5%', '53.2%', '75%', '90%'], correct: 1,
+    explain: '53.2% מהתיירים מעידים שדעתם על ישראל השתנתה לטובה בעקבות הביקור.' },
+  { q: 'מהו ייצוא גלוי?', opts: ['מכירת שירותי תיירות', 'מכירת סחורות פיזיות למדינות אחרות', 'ייבוא מוצרים מחו"ל', 'מיסוי על יבוא'], correct: 1,
+    explain: 'ייצוא גלוי הוא מכירת סחורות פיזיות למדינות אחרות (למשל פירות וירקות), בניגוד לייצוא סמוי של שירותים.' },
+  { q: 'מדוע ענף התיירות נחשב טוב ביצירת תעסוקה?', opts: ['הוא דורש רק עובדים זרים מיומנים', 'רוב המועסקים מקומיים והכישורים הנדרשים מגוונים ולא דורשים בהכרח השכלה גבוהה', 'הוא פועל רק בעונה אחת בשנה', 'הוא מרוכז רק במרכז הארץ'], correct: 1,
+    explain: 'רוב המועסקים בתיירות מקומיים, הכישורים הנדרשים מגוונים ולרוב אינם דורשים השכלה גבוהה — כך שהענף פתוח לאוכלוסיות רחבות.' },
+  { q: 'כיצד תורמת התיירות לפיזור אוכלוסין?', opts: ['מוקדי המשיכה התיירותיים מפוזרים בכל רחבי הארץ, ולכן גם התעסוקה מתפזרת גאוגרפית', 'התיירים עצמם מתפזרים בין הערים', 'המדינה מכריחה מלונות להיפתח בפריפריה', 'אין קשר בין תיירות לפיזור אוכלוסין'], correct: 0,
+    explain: 'מכיוון שמוקדי המשיכה התיירותיים מפוזרים בכל רחבי הארץ, גם התעסוקה שהם יוצרים מתפזרת גאוגרפית ולא מרוכזת רק במרכז.' },
+  { q: 'אילו ענפי משק נהנים מתעסוקת תיירות (לפי חומר הלימוד)?', opts: ['מלונאות, הדרכה, תחבורה, מסחר והסעדה', 'רק מלונאות', 'רק תחבורה ציבורית', 'חקלאות בלבד'], correct: 0,
+    explain: 'ענפי המשק הנהנים מהתעסוקה כוללים מלונאות, הדרכה (מורי דרך), תחבורה, מסחר והסעדה.' },
+  { q: 'במה מתבטאת "חשיבות תדמיתית" של התיירות?', opts: ['התיירות חושפת תיירים למדינה מתקדמת, מטופחת וסובלנית — נגד תדמית שלילית ודה-לגיטימציה', 'התיירות מגדילה את התוצר המקומי בלבד', 'התיירות משפרת את מזג האוויר', 'אין לתיירות השפעה תדמיתית'], correct: 0,
+    explain: 'התיירות הנכנסת חושפת תיירים למה שלא רואים בתקשורת העולמית — מדינה מתקדמת, מטופחת וסובלנית — ובכך פועלת נגד תדמית שלילית ודה-לגיטימציה.' },
+  { q: 'אילו רכיבים כוללים את הדימוי החיובי שהתיירות מציגה על ישראל?', opts: ['חופש גישה למקומות קדושים לכל הדתות, חופש פולחן, שמירה על אתרים היסטוריים ורמת שירות מערבית', 'רק יופי נופי', 'רק מחירים זולים', 'רק אוכל'], correct: 0,
+    explain: 'הדימוי החיובי כולל חופש גישה למקומות הקדושים לכל הדתות, חופש פולחן דתי, שמירה על אתרים היסטוריים והפרחת השממה ברמת שירות מערבית.' },
+  { q: 'למי מיועד פרויקט "תגלית" (Birthright)?', opts: ['לכל תייר באשר הוא', 'לצעירים וצעירות יהודיים בני 18–26', 'רק לחיילי צה"ל', 'לתיירי עסקים'], correct: 1,
+    explain: 'פרויקט תגלית מאפשר לכל צעיר וצעירה יהודיים בני 18–26 סיור חינוכי חינם בישראל.' },
+  { q: 'כמה ימים אורך סיור "תגלית"?', opts: ['שלושה ימים', 'שבעה ימים', 'עשרה ימים', 'חודש'], correct: 2,
+    explain: 'תגלית מציעה סיור חינוכי חינם בן עשרה ימים בישראל.' },
+  { q: 'עם מי נפגשים בדרך כלל משתתפי "תגלית" בישראל?', opts: ['ישראלים בני גילם, בעיקר חיילים וקצינים בצה"ל', 'רק עם שרי ממשלה', 'רק עם תיירים אחרים', 'הם אינם נפגשים עם ישראלים'], correct: 0,
+    explain: 'משתתפי תגלית נפגשים עם ישראלים בני גילם — בעיקר חיילים וקצינים בצה"ל.' },
+  { q: 'באיזו שנה הוקם פרויקט "תגלית"?', opts: ['1990', '2000', '2010', '1967'], correct: 1,
+    explain: 'הפרויקט הוקם ביוזמת מנהיגי יהדות העולם בינואר 2000.' },
+  { q: 'מהן מטרותיו העיקריות של פרויקט תגלית?', opts: ['חיבור לשורשים, מניעת התבוללות ועידוד עלייה והשקעות', 'רק בילוי ונופש', 'קידום מכירות תיירותיות', 'לימוד שפה עברית בלבד'], correct: 0,
+    explain: 'מטרות תגלית: חיבור לשורשים, מניעת התבוללות, עידוד עלייה, השקעות, לימודים ומחקר.' },
+  { q: 'כמה מועסקים (בערך) יש בענף התיירות בישראל, לפי הנתונים בעמוד?', opts: ['23,000', '230,000', '2,300,000', '2,300'], correct: 1,
+    explain: 'לפי הנתונים, כ-230,000 מועסקים בענף התיירות — כ-6% מהמועסקים במשק.' },
+  { q: 'כמה מקומות עבודה נוצרים (בערך) מכל מיליון תיירים נכנסים, לפי הנתונים?', opts: ['4,000', '40,000', '400,000', '4,000,000'], correct: 1,
+    explain: 'לפי הנתונים בעמוד, כ-40,000 מקומות עבודה נוצרים מכל מיליון תיירים הנכנסים לישראל.' },
+  { q: 'מה ההכנסה המשוערת לכל מיליון תיירים נכנסים לישראל, לפי הנתונים?', opts: ['5.5 מיליון ש"ח', '5.5 מיליארד ש"ח', '55 מיליארד ש"ח', '550 אלף ש"ח'], correct: 1,
+    explain: 'לפי הנתונים בעמוד, הכנסה משוערת לכל מיליון תיירים נכנסים היא כ-5.5 מיליארד ש"ח.' },
+  { q: 'כיצד השתנה מספר כניסות התיירים לישראל בין 2017 ל-2019, לפי הנתונים?', opts: ['ירד מ-5.4 ל-3.9 מיליון', 'עלה מ-3.9 ל-5.4 מיליון', 'נשאר קבוע', 'הוכפל פי עשרה'], correct: 1,
+    explain: 'לפי הנתונים בעמוד, כניסות התיירים לישראל עלו מכ-3.9 מיליון ב-2017 לכ-5.4 מיליון ב-2019.' },
+  { q: 'מדוע נקראת התיירות "גשר לדיאלוג בין עמים"?', opts: ['היא חושפת לתיירים מה שלא רואים בתקשורת העולמית', 'היא בנתה גשרים פיזיים בין מדינות', 'היא מתרגמת שפות באופן אוטומטי', 'אין לביטוי הזה קשר לתיירות'], correct: 0,
+    explain: 'רבים בעולם חשופים לתדמית שלילית של ישראל בתקשורת; התיירות הנכנסת חושפת אותם למציאות — מדינה מתקדמת, מטופחת וסובלנית.' },
+  { q: 'מלבד תגלית, כיצד עוד תורמת התיירות לקשר עם יהדות התפוצות?', opts: ['כנסים בנושאים יהודיים, עידוד השקעות ומחקר, והכנסת ידיעת הארץ וציונות לחינוך היהודי בגולה', 'רק דרך מכירת מזכרות', 'אין דרכים נוספות', 'רק דרך חדשות בטלוויזיה'], correct: 0,
+    explain: 'התיירות מהווה כלי לקיום כנסים בנושאים יהודיים, עידוד השקעות ומחקר ופיתוח, והכנסת נושאי ידיעת הארץ וציונות לחינוך היהודי בגולה.' }
+];
+
+function buildQuiz() {
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = QUIZ_DATA.map((item, qi) => `
+    <div class="quiz-q" id="q-${qi}">
+      <div class="q-title">${qi + 1}. ${item.q}</div>
+      <div class="q-opts">
+        ${item.opts.map((opt, oi) => `<button class="q-opt" onclick="selectOpt(${qi}, ${oi})" id="opt-${qi}-${oi}">${opt}</button>`).join('')}
+      </div>
+      <div class="q-explain" id="explain-${qi}">${item.explain}</div>
+    </div>
+  `).join('');
+}
+
+let answers = {};
+function selectOpt(qi, oi) {
+  answers[qi] = oi;
+  QUIZ_DATA[qi].opts.forEach((_, i) => document.getElementById('opt-' + qi + '-' + i).classList.remove('selected'));
+  document.getElementById('opt-' + qi + '-' + oi).classList.add('selected');
+}
+
+function checkQuiz() {
+  let score = 0;
+  QUIZ_DATA.forEach((item, qi) => {
+    item.opts.forEach((_, oi) => {
+      const btn = document.getElementById('opt-' + qi + '-' + oi);
+      btn.disabled = true;
+      if (oi === item.correct) btn.classList.add('correct');
+      else if (answers[qi] === oi) btn.classList.add('wrong');
+    });
+    if (answers[qi] === item.correct) score++;
+    document.getElementById('explain-' + qi).classList.add('show');
+  });
+  const scoreEl = document.getElementById('quizScore');
+  scoreEl.textContent = 'הציון שלכם: ' + score + ' מתוך ' + QUIZ_DATA.length + ' (' + Math.round(100 * score / QUIZ_DATA.length) + '%)';
+  scoreEl.classList.add('show');
+}
+
+function resetQuiz() {
+  answers = {};
+  document.getElementById('quizScore').classList.remove('show');
+  buildQuiz();
+}
+
+buildQuiz();
+
+/* ===== בוט שאלות — עונה אך ורק מתוך חומר הלימוד בדרייב, לא ניגש לשום מקור חיצוני ===== */
+const BAGRUT_API_URL = 'https://script.google.com/macros/s/AKfycbwf3-MNZBBi64zXcNH7wfhBRoEBl9brtQ9QRI4Won5RmUIOrl_WBivN6uI5NAp6Mc0h/exec';
+
+async function callBagrutBot(question, mode, bagrutQuestion) {
+  const res = await fetch(BAGRUT_API_URL, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'askBagrutBot', question, mode: mode || 'qa', bagrut_question: bagrutQuestion || '' })
+  });
+  const data = await res.json();
+  if (!data.ok) throw new Error(data.error);
+  return data.data.reply;
+}
+function toggleBotWidget(open) { document.getElementById('botWidget').classList.toggle('open', open); }
+function appendBotMsg(role, text) {
+  const log = document.getElementById('botLog');
+  const div = document.createElement('div');
+  div.className = 'bot-msg bot-msg-' + role;
+  div.textContent = text;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+  return div;
+}
+async function sendBotQuestion(e) {
+  if (e) e.preventDefault();
+  const input = document.getElementById('botInput');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  appendBotMsg('user', q);
+  const pending = appendBotMsg('bot', '...חושב, רגע');
+  try { pending.textContent = await callBagrutBot(q, 'qa', ''); }
+  catch (err) { pending.textContent = 'שגיאה: ' + err.message; }
+}
+</script>
+
+<button class="bot-toggle" onclick="toggleBotWidget(true)">💬 שאלו אותי / למדו איתי</button>
+<div class="bot-widget" id="botWidget">
+  <div class="bot-widget-head">
+    <strong>🎓 עוזר הלמידה — חשיבות התיירות</strong>
+    <button class="bot-widget-close" onclick="toggleBotWidget(false)">✕</button>
+  </div>
+  <div class="bot-widget-sub">עונה רק על סמך חומר הלימוד האמיתי — לא ממציא ולא ניגש למקורות חיצוניים</div>
+  <div class="bot-log" id="botLog"></div>
+  <form class="bot-widget-form" onsubmit="sendBotQuestion(event)">
+    <input type="text" id="botInput" placeholder="שאלו כל דבר על החומר..." autocomplete="off" />
+    <button type="submit">שלח</button>
+  </form>
+</div>
 
 </body>
 </html>
