@@ -86,6 +86,13 @@
     .btn-modal-cancel { background: var(--dark3); color: var(--muted); }
     .btn-modal-confirm { background: linear-gradient(135deg, var(--blue), var(--purple)); color: white; }
     .modal-error { color: var(--error); font-size: 12px; margin-top: 8px; }
+
+    .modal-wide { max-width: 640px; max-height: 80vh; overflow-y: auto; }
+    .oa-item { background: var(--dark3); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
+    .oa-q { font-weight: 700; font-size: 13px; margin-bottom: 8px; }
+    .oa-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 8px; margin-bottom: 3px; }
+    .oa-text { font-size: 13px; white-space: pre-wrap; }
+    .oa-meta { font-size: 11px; color: var(--muted); margin-top: 8px; }
   </style>
 </head>
 <body>
@@ -129,11 +136,12 @@
             <th>כיתה</th>
             <th>התקדמות</th>
             <th>יחידות</th>
+            <th>שאלות פתוחות</th>
             <th></th>
           </tr>
         </thead>
         <tbody id="studentsBody">
-          <tr><td colspan="6" class="empty-state"><span class="loading-spinner"></span> טוען...</td></tr>
+          <tr><td colspan="7" class="empty-state"><span class="loading-spinner"></span> טוען...</td></tr>
         </tbody>
       </table>
     </div>
@@ -150,6 +158,16 @@
     <div class="modal-actions">
       <button class="btn-modal-cancel" onclick="hideModal()">ביטול</button>
       <button class="btn-modal-confirm" onclick="submitAddStudent()">הוספה</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="openAnswersModal">
+  <div class="modal modal-wide">
+    <div class="modal-title" id="openAnswersTitle">שאלות פתוחות</div>
+    <div id="openAnswersBody"></div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="hideOpenAnswersModal()">סגירה</button>
     </div>
   </div>
 </div>
@@ -186,7 +204,7 @@ async function loadData() {
     renderStats(data.stats || {});
     renderStudents(allStudents);
   } catch(e) {
-    document.getElementById('studentsBody').innerHTML = '<tr><td colspan="6" class="empty-state">שגיאה: ' + e.message + '</td></tr>';
+    document.getElementById('studentsBody').innerHTML = '<tr><td colspan="7" class="empty-state">שגיאה: ' + e.message + '</td></tr>';
   }
 }
 
@@ -201,7 +219,7 @@ function renderStats(stats) {
 function renderStudents(students) {
   const body = document.getElementById('studentsBody');
   if (!students.length) {
-    body.innerHTML = '<tr><td colspan="6" class="empty-state">עדיין אין תלמידים ברשימה. לחצו על "הוסף תלמיד/ה".</td></tr>';
+    body.innerHTML = '<tr><td colspan="7" class="empty-state">עדיין אין תלמידים ברשימה. לחצו על "הוסף תלמיד/ה".</td></tr>';
     return;
   }
   body.innerHTML = students.map(s => `
@@ -216,6 +234,7 @@ function renderStudents(students) {
         </div>
       </td>
       <td>${s.units.map(u => `<span class="unit-pill ${u.completed ? '' : 'not-done'}">${u.completed ? '✔' : '—'} ${escapeHtml(u.name)}${u.completed ? ' · ' + u.best_score + '/' + u.total_questions : ''}</span>`).join(' ')}</td>
+      <td>${s.openAnswerCount ? `<button class="btn-sm btn-back" onclick="viewOpenAnswers('${escapeAttr(s.email)}', '${escapeAttr(s.name)}')">📝 ${s.openAnswerCount}</button>` : '<span style="color:var(--muted)">—</span>'}</td>
       <td><button class="btn-sm btn-danger" onclick="removeStudent('${escapeAttr(s.email)}')">הסר</button></td>
     </tr>
   `).join('');
@@ -260,6 +279,38 @@ async function removeStudent(email) {
     await loadData();
   } catch(e) { alert('שגיאה: ' + e.message); }
 }
+
+async function viewOpenAnswers(email, name) {
+  document.getElementById('openAnswersTitle').textContent = 'שאלות פתוחות — ' + name;
+  document.getElementById('openAnswersBody').innerHTML = '<div class="empty-state"><span class="loading-spinner"></span> טוען...</div>';
+  document.getElementById('openAnswersModal').classList.add('show');
+  try {
+    const data = await callAPI('getBagrutStudentOpenAnswers', { studentEmail: email });
+    renderOpenAnswers(data.answers || []);
+  } catch (e) {
+    document.getElementById('openAnswersBody').innerHTML = '<div class="empty-state">שגיאה: ' + escapeHtml(e.message) + '</div>';
+  }
+}
+
+function renderOpenAnswers(answers) {
+  const body = document.getElementById('openAnswersBody');
+  if (!answers.length) {
+    body.innerHTML = '<div class="empty-state">אין עדיין שאלות פתוחות שנשלחו.</div>';
+    return;
+  }
+  body.innerHTML = answers.map(a => `
+    <div class="oa-item">
+      <div class="oa-q">${escapeHtml(a.question)}</div>
+      <div class="oa-label">התשובה של התלמיד/ה</div>
+      <div class="oa-text">${escapeHtml(a.answer)}</div>
+      <div class="oa-label">משוב הבוט</div>
+      <div class="oa-text">${escapeHtml(a.feedback)}</div>
+      <div class="oa-meta">${escapeHtml(a.unit_id || '')} · ${a.timestamp ? new Date(a.timestamp).toLocaleString('he-IL') : ''}</div>
+    </div>
+  `).join('');
+}
+
+function hideOpenAnswersModal() { document.getElementById('openAnswersModal').classList.remove('show'); }
 
 function escapeHtml(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function escapeAttr(s) { return escapeHtml(s).replace(/`/g, '&#96;'); }
