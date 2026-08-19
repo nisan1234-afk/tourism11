@@ -678,6 +678,45 @@ footer.site-footer {
   .bot-widget { width: calc(100vw - 24px); }
 }
 
+/* ===== מילון מונחים צף — מבוסס על CONCEPTS ממושגים.html ===== */
+.gloss-toggle {
+  position: fixed; bottom: 22px; right: 22px; z-index: 500;
+  display: flex; align-items: center; gap: 8px; padding: 12px 18px;
+  border-radius: 30px; border: none; cursor: pointer;
+  background: linear-gradient(135deg, var(--terracotta), var(--gold)); color: #fff;
+  font-weight: 700; font-size: 14px; box-shadow: 0 8px 24px rgba(43,35,32,0.25);
+}
+.gloss-toggle:hover { filter: brightness(1.07); }
+.gloss-widget {
+  position: fixed; bottom: 22px; right: 22px; z-index: 501;
+  width: min(360px, calc(100vw - 32px)); max-height: min(520px, calc(100vh - 60px));
+  background: var(--card); border-radius: 18px; box-shadow: 0 20px 50px rgba(43,35,32,0.28);
+  display: none; flex-direction: column; overflow: hidden; border: 1px solid var(--border);
+}
+.gloss-widget.open { display: flex; }
+.gloss-widget-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px; background: linear-gradient(135deg, var(--terracotta), var(--gold)); color: #fff;
+}
+.gloss-widget-head strong { font-size: 14px; }
+.gloss-widget-close { background: none; border: none; color: #fff; font-size: 18px; cursor: pointer; line-height: 1; }
+.gloss-search {
+  margin: 12px 14px 0; padding: 9px 13px; border-radius: 12px; border: 1px solid var(--border);
+  font-family: inherit; font-size: 13.5px; outline: none;
+}
+.gloss-search:focus { border-color: var(--terracotta); }
+.gloss-list { flex: 1; overflow-y: auto; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; min-height: 120px; }
+.gloss-item { padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+.gloss-item:last-child { border-bottom: none; padding-bottom: 0; }
+.gloss-term { font-weight: 700; color: var(--terracotta); margin-bottom: 3px; font-size: 13.5px; }
+.gloss-def { font-size: 13px; color: var(--ink); line-height: 1.55; }
+.gloss-empty { text-align: center; color: var(--muted, #7a6f66); padding: 20px 0; font-size: 13px; }
+
+@media (max-width: 480px) {
+  .gloss-toggle, .gloss-widget { right: 12px; bottom: 12px; }
+  .gloss-widget { width: calc(100vw - 24px); }
+}
+
 /* ===== מושגים — אשכולות, כרטיסיות, התאמה, חידון ===== */
 .cluster-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
 .cluster-tab {
