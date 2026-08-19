@@ -717,6 +717,31 @@ footer.site-footer {
   .gloss-widget { width: calc(100vw - 24px); }
 }
 
+/* ===== ציר זמן — לשימוש רק כשהכרונולוגיה עצמה מלמדת (ר' CONTENT_GUIDE.md) ===== */
+.timeline { display: flex; align-items: flex-start; gap: 0; margin: 18px 0 22px; position: relative; }
+.timeline-item { flex: 1; position: relative; padding: 0 10px; text-align: center; }
+.timeline-item::before {
+  content: ''; position: absolute; top: 7px; right: 50%; left: -50%; height: 2px;
+  background: var(--border);
+}
+.timeline-item:first-child::before { display: none; }
+.timeline-dot {
+  width: 16px; height: 16px; border-radius: 50%; background: var(--terracotta);
+  border: 3px solid var(--card); box-shadow: 0 0 0 2px var(--terracotta);
+  margin: 0 auto 8px; position: relative; z-index: 1;
+}
+.timeline-year { font-family: var(--font-display, inherit); font-weight: 800; font-size: 16px; color: var(--terracotta); }
+.timeline-label { font-size: 13px; font-weight: 700; margin: 2px 0 8px; }
+.timeline-q { text-align: right; font-size: 12.5px; }
+.timeline-q summary { cursor: pointer; color: var(--ink-soft); }
+
+@media (max-width: 640px) {
+  .timeline { flex-direction: column; gap: 18px; }
+  .timeline-item::before { display: none; }
+  .timeline-item { text-align: right; padding: 0; }
+  .timeline-dot { margin: 0 0 6px; }
+}
+
 /* ===== מושגים — אשכולות, כרטיסיות, התאמה, חידון ===== */
 .cluster-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
 .cluster-tab {
