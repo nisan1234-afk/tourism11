@@ -427,6 +427,7 @@ let currentUser = null;
 let units = [];
 let currentQuiz = null;
 let quizAnswers = [];
+let mistakesCounts = {};
 
 window.onload = async function() {
   const stored = sessionStorage.getItem('kitahUser');
@@ -449,6 +450,11 @@ async function loadProgress() {
     const data = await callAPI('getBagrutMyProgress');
     units = data.units || [];
     renderUnits();
+    try {
+      const mData = await callAPI('getBagrutMistakesSummary');
+      mistakesCounts = mData.counts || {};
+      renderUnits();
+    } catch (e) { /* לא קריטי — אם נכשל, פשוט לא יופיע כפתור "מה שכחתי" */ }
   } catch(e) {
     container.innerHTML = '<div class="empty-state">שגיאה: ' + e.message + '</div>';
   }
@@ -482,6 +488,7 @@ function renderUnits() {
           ${UNIT_CONTENT[u.unit_id] ? `<a class="btn btn-ghost" href="${UNIT_CONTENT[u.unit_id].studyUrl}" target="_blank">📖 לחומר הלימוד</a>` : ''}
           <button class="btn btn-primary" onclick="startQuiz('${u.unit_id}', false)">${u.completed ? '🔁 לנסות שוב' : '▶ להתחיל בוחן'}</button>
           <button class="btn btn-ghost" onclick="startQuiz('${u.unit_id}', true)">⏱️ בגרות מדומה</button>
+          ${mistakesCounts[u.unit_id] ? `<button class="btn btn-ghost" onclick="startMistakePractice('${u.unit_id}')">🧠 מה שכחתי (${mistakesCounts[u.unit_id]})</button>` : ''}
           ${UNIT_CONTENT[u.unit_id] && UNIT_CONTENT[u.unit_id].open && UNIT_CONTENT[u.unit_id].open.length ? `<button class="btn btn-ghost" onclick="startOpenAnswers('${u.unit_id}')">📝 שאלות פתוחות</button>` : ''}
         </div>
       </div>
@@ -520,6 +527,29 @@ function startQuiz(unit_id, examMode) {
   } else {
     document.getElementById('quizTimer').textContent = '';
   }
+}
+
+async function startMistakePractice(unit_id) {
+  const content = UNIT_CONTENT[unit_id];
+  if (!content) return;
+  let indexes;
+  try {
+    const data = await callAPI('getBagrutMistakes', { unit_id });
+    indexes = data.indexes || [];
+  } catch (e) {
+    alert('שגיאה בטעינת "מה שכחתי": ' + e.message);
+    return;
+  }
+  if (!indexes.length) { alert('כרגע אין שאלות פתוחות לחזרה ביחידה הזו.'); return; }
+  const questions = indexes.map(i => content.quiz[i]).filter(Boolean);
+  currentQuiz = { unit_id, questions, focusMode: true, originalIndexes: indexes };
+  quizAnswers = new Array(questions.length).fill(null);
+  const unit = units.find(u => u.unit_id === unit_id);
+  document.getElementById('quizTitle').innerHTML = 'מה שכחתי — ' + escapeHtml(unit ? unit.name : '') +
+    '<span class="quiz-mode-badge exam">🧠 חזרה ממוקדת</span>';
+  document.getElementById('quizTimer').textContent = '';
+  renderQuizBody();
+  document.getElementById('quizOverlay').classList.add('show');
 }
 
 function updateExamTimerDisplay() {
@@ -619,6 +649,7 @@ async function submitQuiz(auto) {
 
   let score = 0;
   const wrongNums = [];
+  const mistakeResults = [];
   currentQuiz.questions.forEach((item, qi) => {
     const qEl = document.getElementById('quizQ' + qi);
     const opts = qEl.querySelectorAll('.quiz-opt');
@@ -628,18 +659,23 @@ async function submitQuiz(auto) {
       else if (oi === quizAnswers[qi]) btn.classList.add('wrong');
     });
     document.getElementById('quizExplain' + qi).classList.add('show');
-    if (quizAnswers[qi] === item.correct) score++;
-    else wrongNums.push(qi + 1);
+    const isCorrect = quizAnswers[qi] === item.correct;
+    if (isCorrect) score++; else wrongNums.push(qi + 1);
+    const originalIndex = currentQuiz.focusMode ? currentQuiz.originalIndexes[qi] : qi;
+    mistakeResults.push({ index: originalIndex, correct: isCorrect });
   });
 
   const body = document.getElementById('quizBody');
   const reviewHtml = wrongNums.length
     ? `<div class="quiz-review-list">כדאי לחזור על שאלות: <b>${wrongNums.join(', ')}</b></div>`
     : `<div class="quiz-review-list">כל הכבוד — ענית נכון על כל השאלות! 🎉</div>`;
+  const savedNote = currentQuiz.focusMode
+    ? 'חזרה ממוקדת — לא משפיע על ההתקדמות/הציון הכללי של היחידה'
+    : Math.round(100 * score / total) + '% הצלחה — נשמר בהתקדמות שלך';
   const resultHtml = `
     <div class="quiz-result">
       <div class="quiz-result-score">${score} / ${total}</div>
-      <div style="color:var(--muted);font-size:13px;">${Math.round(100 * score / total)}% הצלחה — נשמר בהתקדמות שלך</div>
+      <div style="color:var(--muted);font-size:13px;">${savedNote}</div>
     </div>
     ${reviewHtml}
   `;
@@ -647,11 +683,16 @@ async function submitQuiz(auto) {
   const footer = body.querySelector('.quiz-footer');
   footer.innerHTML = '<button class="btn btn-primary" onclick="closeQuiz(); loadProgress();">סגירה וחזרה להתקדמות</button>';
 
-  try {
-    await callAPI('saveBagrutQuizResult', { unit_id: currentQuiz.unit_id, score, total });
-  } catch(e) {
-    alert('הציון חושב אך לא נשמר: ' + e.message);
+  if (!currentQuiz.focusMode) {
+    try {
+      await callAPI('saveBagrutQuizResult', { unit_id: currentQuiz.unit_id, score, total });
+    } catch(e) {
+      alert('הציון חושב אך לא נשמר: ' + e.message);
+    }
   }
+  try {
+    await callAPI('updateBagrutMistakes', { unit_id: currentQuiz.unit_id, results: mistakeResults });
+  } catch (e) { /* לא קריטי — לא חוסם את הצגת התוצאה */ }
 }
 
 function escapeHtml(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
