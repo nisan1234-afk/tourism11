@@ -394,6 +394,39 @@ async function sendBotQuestion(e) {
   try { pending.textContent = await callBagrutBot(q, 'qa', ''); }
   catch (err) { pending.textContent = 'שגיאה: ' + err.message; }
 }
+
+/* עוזר תשובה פתוחה גנרי — מוסיף אזור בדיקת תשובה אחרי כל שאלת חזרה (details.qa) */
+function enhanceReviewQuestionsWithOpenAnswer() {
+  document.querySelectorAll('details.qa').forEach(function(details) {
+    const summary = details.querySelector('summary');
+    if (!summary) return;
+    const questionText = summary.textContent.trim();
+    const wrap = document.createElement('div');
+    wrap.className = 'open-answer';
+    wrap.innerHTML = '<textarea class="open-answer-input" placeholder="כתבו כאן את התשובה שלכם, ואז לחצו לבדיקה..."></textarea>' +
+      '<button class="btn-hint btn-check" type="button">📝 בדקו לי את התשובה</button>';
+    wrap.querySelector('button').addEventListener('click', function() {
+      checkReviewOpenAnswer(questionText, wrap.querySelector('.open-answer-input'));
+    });
+    details.insertAdjacentElement('afterend', wrap);
+  });
+}
+
+async function checkReviewOpenAnswer(questionText, textarea) {
+  const answer = textarea.value.trim();
+  if (!answer) { textarea.focus(); return; }
+  toggleBotWidget(true);
+  appendBotMsg('user', 'זו התשובה שכתבתי: "' + answer + '"');
+  const pending = appendBotMsg('bot', '...בודק את התשובה, רגע');
+  const checkPrompt = 'התלמיד/ה כתב/ה את התשובה הבאה לשאלת חזרה: "' + answer +
+    '". ציינו בקצרה אילו חלקים מהשאלה כוסו במלואם, ואילו חלקים חסרים או חלקיים. לחלקים החסרים תנו רמז מכוון (לא את התשובה המלאה) שיעזור להשלים אותם בעצמם. אם הכל כבר מכוסה היטב, אמרו זאת ועודדו.';
+  try {
+    pending.textContent = await callBagrutBot(checkPrompt, 'hint', questionText);
+  } catch (err) {
+    pending.textContent = 'שגיאה: ' + err.message;
+  }
+}
+enhanceReviewQuestionsWithOpenAnswer();
 </script>
 
 <button class="bot-toggle" onclick="toggleBotWidget(true)">💬 שאלו אותי / למדו איתי</button>
