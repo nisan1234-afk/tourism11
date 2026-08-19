@@ -39,6 +39,12 @@
     .main { max-width: 800px; margin: 0 auto; padding: 26px 24px; }
 
     .unit-card { background: linear-gradient(160deg, rgba(255,239,217,0.9), rgba(255,255,255,0.9)); border: 1px solid rgba(27,42,61,0.07); border-radius: 18px; padding: 22px; margin-bottom: 18px; }
+    .promo-card { display: flex; align-items: center; gap: 16px; padding: 18px 22px; margin-bottom: 22px; border-radius: 18px; background: linear-gradient(135deg, var(--blue), var(--purple)); color: #fff; text-decoration: none; box-shadow: 0 6px 18px rgba(30,144,255,0.28); transition: transform 0.15s; }
+    .promo-card:hover { transform: translateY(-2px); }
+    .promo-icon { font-size: 30px; flex-shrink: 0; }
+    .promo-title { font-family: var(--font-display); font-size: 15px; font-weight: 800; }
+    .promo-desc { font-size: 12px; opacity: 0.9; margin-top: 3px; }
+    .promo-count { margin-inline-start: auto; font-family: var(--font-display); font-size: 13px; font-weight: 700; white-space: nowrap; background: rgba(255,255,255,0.18); padding: 5px 12px; border-radius: 20px; }
     .unit-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
     .unit-name { font-family: var(--font-display); font-size: 18px; font-weight: 800; }
     .unit-badge { font-size: 11px; font-weight: 700; padding: 4px 11px; border-radius: 20px; }
@@ -115,8 +121,18 @@
   </div>
 </div>
 
-<div class="main" id="unitsContainer">
-  <div class="empty-state"><span class="loading-spinner"></span> טוען התקדמות...</div>
+<div class="main">
+  <a class="promo-card" href="https://nisan1234-afk.github.io/jerusalem-tour/" target="_blank">
+    <div class="promo-icon">🖼️</div>
+    <div>
+      <div class="promo-title">כרטיסיות זיהוי אתרים מתמונה</div>
+      <div class="promo-desc">114 אתרים אמיתיים מכל 4 החבלים — נחשו מהתמונה, סמנו "יודע/ת". ההתקדמות נשמרת ונראית למורה.</div>
+    </div>
+    <div class="promo-count" id="siteRecognitionCount"></div>
+  </a>
+  <div id="unitsContainer">
+    <div class="empty-state"><span class="loading-spinner"></span> טוען התקדמות...</div>
+  </div>
 </div>
 
 <div class="quiz-overlay" id="quizOverlay">
@@ -455,6 +471,11 @@ async function loadProgress() {
       mistakesCounts = mData.counts || {};
       renderUnits();
     } catch (e) { /* לא קריטי — אם נכשל, פשוט לא יופיע כפתור "מה שכחתי" */ }
+    try {
+      const sData = await callAPI('getMySiteRecognition');
+      const knownCount = Object.values(sData.known || {}).filter(Boolean).length;
+      document.getElementById('siteRecognitionCount').textContent = knownCount + ' / 114';
+    } catch (e) { /* לא קריטי — הכרטיס עדיין מקושר, פשוט בלי מונה */ }
   } catch(e) {
     container.innerHTML = '<div class="empty-state">שגיאה: ' + e.message + '</div>';
   }

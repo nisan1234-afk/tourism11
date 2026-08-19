@@ -146,11 +146,12 @@
             <th>התקדמות</th>
             <th>יחידות</th>
             <th>שאלות פתוחות</th>
+            <th>🖼️ זיהוי אתרים</th>
             <th></th>
           </tr>
         </thead>
         <tbody id="studentsBody">
-          <tr><td colspan="7" class="empty-state"><span class="loading-spinner"></span> טוען...</td></tr>
+          <tr><td colspan="8" class="empty-state"><span class="loading-spinner"></span> טוען...</td></tr>
         </tbody>
       </table>
     </div>
@@ -211,6 +212,7 @@ const API_URL  = 'https://script.google.com/macros/s/AKfycbwf3-MNZBBi64zXcNH7wfh
 
 let currentUser = null;
 let allStudents = [];
+let siteRecognitionCounts = {};
 
 window.onload = async function() {
   const stored = sessionStorage.getItem('kitahUser');
@@ -233,8 +235,13 @@ async function loadData() {
     allStudents = data.students || [];
     renderStats(data.stats || {});
     renderStudents(allStudents);
+    try {
+      const rData = await callAPI('getBagrutSiteRecognitionSummary');
+      siteRecognitionCounts = rData.counts || {};
+      renderStudents(allStudents);
+    } catch (e) { /* לא קריטי — אם נכשל, עמודת זיהוי האתרים תישאר ריקה */ }
   } catch(e) {
-    document.getElementById('studentsBody').innerHTML = '<tr><td colspan="7" class="empty-state">שגיאה: ' + e.message + '</td></tr>';
+    document.getElementById('studentsBody').innerHTML = '<tr><td colspan="8" class="empty-state">שגיאה: ' + e.message + '</td></tr>';
   }
 }
 
@@ -249,7 +256,7 @@ function renderStats(stats) {
 function renderStudents(students) {
   const body = document.getElementById('studentsBody');
   if (!students.length) {
-    body.innerHTML = '<tr><td colspan="7" class="empty-state">עדיין אין תלמידים ברשימה. לחצו על "הוסף תלמיד/ה".</td></tr>';
+    body.innerHTML = '<tr><td colspan="8" class="empty-state">עדיין אין תלמידים ברשימה. לחצו על "הוסף תלמיד/ה".</td></tr>';
     return;
   }
   body.innerHTML = students.map(s => `
@@ -265,6 +272,7 @@ function renderStudents(students) {
       </td>
       <td>${s.units.map(u => `<span class="unit-pill ${u.completed ? '' : 'not-done'}">${u.completed ? '✔' : '—'} ${escapeHtml(u.name)}${u.completed ? ' · ' + u.best_score + '/' + u.total_questions : ''}</span>`).join(' ')}</td>
       <td>${s.openAnswerCount ? `<button class="btn-sm btn-back" onclick="viewOpenAnswers('${escapeAttr(s.email)}', '${escapeAttr(s.name)}')">📝 ${s.openAnswerCount}</button>` : '<span style="color:var(--muted)">—</span>'}</td>
+      <td>${siteRecognitionCounts[s.email] ? `<span class="unit-pill">🖼️ ${siteRecognitionCounts[s.email]}/114</span>` : '<span style="color:var(--muted)">—</span>'}</td>
       <td><button class="btn-sm btn-danger" onclick="removeStudent('${escapeAttr(s.email)}')">הסר</button></td>
     </tr>
   `).join('');
