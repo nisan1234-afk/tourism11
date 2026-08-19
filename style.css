@@ -742,6 +742,29 @@ footer.site-footer {
   .timeline-dot { margin: 0 0 6px; }
 }
 
+/* ===== מפת מסלול אינטראקטיבית — "תכנן מסלול" (ר' CONTENT_GUIDE.md, שאלת רכבת העמק) ===== */
+.route-map { background: var(--sand); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; margin: 14px 0; }
+.route-hint { font-size: 12.5px; color: var(--ink-soft); margin-bottom: 14px; }
+.route-line { display: flex; align-items: flex-start; gap: 0; position: relative; overflow-x: auto; padding-bottom: 4px; }
+.route-stop { flex: 1; min-width: 90px; position: relative; padding: 0 8px; text-align: center; cursor: pointer; }
+.route-stop::before {
+  content: ''; position: absolute; top: 9px; right: 50%; left: -50%; height: 3px;
+  background: var(--border);
+}
+.route-stop:first-child::before { display: none; }
+.route-dot {
+  width: 20px; height: 20px; border-radius: 50%; background: var(--card);
+  border: 3px solid var(--ink-soft, #6B5D52); margin: 0 auto 6px; position: relative; z-index: 1;
+  transition: all .2s var(--ease); display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: transparent;
+}
+.route-stop:hover .route-dot { border-color: var(--terracotta); }
+.route-stop.selected .route-dot { background: var(--terracotta); border-color: var(--terracotta); color: #fff; }
+.route-stop.selected .route-dot::after { content: '✓'; }
+.route-stop-label { font-size: 12px; font-weight: 700; line-height: 1.3; }
+.route-stop.selected .route-stop-label { color: var(--terracotta); }
+.route-selected-note { font-size: 12px; color: var(--terracotta); font-weight: 700; margin-top: 10px; min-height: 18px; }
+
 /* ===== מושגים — אשכולות, כרטיסיות, התאמה, חידון ===== */
 .cluster-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
 .cluster-tab {

@@ -155,6 +155,30 @@
       <span class="bagrut-badge">🎓 שאלת בגרות אמיתית · מקור: אוסף שאלות בגרות — העמקים</span>
       <p><strong>שאלה:</strong></p>
       <p>משפחה מתארחת בחיפה ומעוניינת לטייל באזור העמקים באמצעות הרכבת, הנוסעת בקו המחודש של רכבת העמק. הרכבת עוצרת בכמה תחנות: יקנעם-כפר יהושע, מגדל העמק-כפר ברוך, עפולה ובית שאן. המליצו למשפחה על שני יעדים תיירותיים הנמצאים בסביבת מסלול הרכבת ותארו אותם.</p>
+
+      <div class="route-map">
+        <div class="route-hint">🗺️ תכנון מסלול: לחצו על 2 תחנות שבהן הייתם ממליצים למשפחה לרדת ולבקר</div>
+        <div class="route-line" id="railwayRoute">
+          <div class="route-stop" data-stop="יקנעם־כפר יהושע" onclick="toggleRouteStop(this)">
+            <div class="route-dot"></div>
+            <div class="route-stop-label">יקנעם־כפר יהושע</div>
+          </div>
+          <div class="route-stop" data-stop="מגדל העמק־כפר ברוך" onclick="toggleRouteStop(this)">
+            <div class="route-dot"></div>
+            <div class="route-stop-label">מגדל העמק־כפר ברוך</div>
+          </div>
+          <div class="route-stop" data-stop="עפולה" onclick="toggleRouteStop(this)">
+            <div class="route-dot"></div>
+            <div class="route-stop-label">עפולה</div>
+          </div>
+          <div class="route-stop" data-stop="בית שאן" onclick="toggleRouteStop(this)">
+            <div class="route-dot"></div>
+            <div class="route-stop-label">בית שאן</div>
+          </div>
+        </div>
+        <div class="route-selected-note" id="railwayRouteNote"></div>
+      </div>
+
       <button class="btn-hint" onclick="askHint(this)">🤖 עזרו לי (בלי לגלות את התשובה)</button>
       <div class="open-answer">
         <textarea class="open-answer-input" placeholder="כתבו כאן את התשובה שלכם (אפשר גם חלקית), ואז לחצו לבדיקה..."></textarea>
@@ -478,6 +502,27 @@ async function checkOpenAnswer(btn) {
   }
 }
 
+/* מפת מסלול אינטראקטיבית (שאלת רכבת העמק) — בחירת עד 2 תחנות, ממלאת שורת פתיחה בתשובה הפתוחה */
+function toggleRouteStop(el) {
+  const line = el.closest('.route-line');
+  const selected = Array.from(line.querySelectorAll('.route-stop.selected'));
+  if (el.classList.contains('selected')) {
+    el.classList.remove('selected');
+  } else {
+    if (selected.length >= 2) selected[0].classList.remove('selected');
+    el.classList.add('selected');
+  }
+  const stops = Array.from(line.querySelectorAll('.route-stop.selected')).map(s => s.dataset.stop);
+  const note = document.getElementById(line.id + 'Note');
+  note.textContent = stops.length ? 'נבחרו לירידה: ' + stops.join(' + ') : '';
+
+  const box = line.closest('.bagrut-real');
+  const textarea = box.querySelector('.open-answer-input');
+  if (textarea && !textarea.dataset.userEdited) {
+    textarea.value = stops.length ? 'בחרתי לרדת בתחנות: ' + stops.join(', ') + '.\n\nהיעדים התיירותיים בסביבתן: ' : '';
+  }
+}
+
 /* עוזר תשובה פתוחה גנרי — מוסיף אזור בדיקת תשובה אחרי כל שאלת חזרה (details.qa) שאינה כבר בתוך .bagrut-real */
 function enhanceReviewQuestionsWithOpenAnswer() {
   document.querySelectorAll('details.qa').forEach(function(details) {
@@ -511,6 +556,9 @@ async function checkReviewOpenAnswer(questionText, textarea) {
   }
 }
 enhanceReviewQuestionsWithOpenAnswer();
+document.querySelectorAll('.open-answer-input').forEach(ta => {
+  ta.addEventListener('input', () => { ta.dataset.userEdited = '1'; });
+});
 </script>
 
 <button class="bot-toggle" onclick="toggleBotWidget(true)">💬 שאלו אותי / למדו איתי</button>
