@@ -67,6 +67,14 @@
     .quiz-modal { max-width: 700px; margin: 0 auto; background: var(--dark2); border-radius: 20px; padding: 26px; }
     .quiz-modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
     .quiz-modal-title { font-family: var(--font-display); font-size: 17px; font-weight: 800; }
+    .quiz-timer { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--muted); margin-top: 3px; font-variant-numeric: tabular-nums; }
+    .quiz-timer.warn { color: var(--warning); }
+    .quiz-timer.danger { color: var(--error); }
+    .quiz-mode-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-inline-start: 8px; vertical-align: middle; }
+    .quiz-mode-badge.exam { background: rgba(255,122,61,0.14); color: var(--warning); }
+    .quiz-mode-badge.practice { background: rgba(14,158,143,0.1); color: var(--teal); }
+    .quiz-review-list { background: var(--dark3); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; font-size: 12px; }
+    .quiz-review-list b { font-family: var(--font-display); }
     .quiz-q { margin-bottom: 20px; padding-bottom: 18px; border-bottom: 1px solid rgba(27,42,61,0.07); }
     .quiz-q:last-child { border-bottom: none; }
     .quiz-q-text { font-weight: 700; margin-bottom: 10px; font-size: 14px; }
@@ -114,7 +122,10 @@
 <div class="quiz-overlay" id="quizOverlay">
   <div class="quiz-modal">
     <div class="quiz-modal-head">
-      <div class="quiz-modal-title" id="quizTitle">בוחן</div>
+      <div>
+        <div class="quiz-modal-title" id="quizTitle">בוחן</div>
+        <div class="quiz-timer" id="quizTimer"></div>
+      </div>
       <button class="btn-sm btn-ghost" onclick="closeQuiz()">✕ סגירה</button>
     </div>
     <div id="quizBody"></div>
@@ -469,7 +480,8 @@ function renderUnits() {
         </div>
         <div class="unit-actions">
           ${UNIT_CONTENT[u.unit_id] ? `<a class="btn btn-ghost" href="${UNIT_CONTENT[u.unit_id].studyUrl}" target="_blank">📖 לחומר הלימוד</a>` : ''}
-          <button class="btn btn-primary" onclick="startQuiz('${u.unit_id}')">${u.completed ? '🔁 לנסות שוב' : '▶ להתחיל בוחן'}</button>
+          <button class="btn btn-primary" onclick="startQuiz('${u.unit_id}', false)">${u.completed ? '🔁 לנסות שוב' : '▶ להתחיל בוחן'}</button>
+          <button class="btn btn-ghost" onclick="startQuiz('${u.unit_id}', true)">⏱️ בגרות מדומה</button>
           ${UNIT_CONTENT[u.unit_id] && UNIT_CONTENT[u.unit_id].open && UNIT_CONTENT[u.unit_id].open.length ? `<button class="btn btn-ghost" onclick="startOpenAnswers('${u.unit_id}')">📝 שאלות פתוחות</button>` : ''}
         </div>
       </div>
@@ -477,18 +489,53 @@ function renderUnits() {
   }).join('');
 }
 
-function startQuiz(unit_id) {
+const EXAM_SECONDS_PER_QUESTION = 75;
+let examTimerHandle = null;
+let examSecondsLeft = 0;
+
+function startQuiz(unit_id, examMode) {
   const content = UNIT_CONTENT[unit_id];
   if (!content) return;
-  currentQuiz = { unit_id, questions: content.quiz };
+  currentQuiz = { unit_id, questions: content.quiz, examMode: !!examMode };
   quizAnswers = new Array(content.quiz.length).fill(null);
   const unit = units.find(u => u.unit_id === unit_id);
-  document.getElementById('quizTitle').textContent = 'בוחן — ' + (unit ? unit.name : '');
+  const modeBadge = examMode
+    ? '<span class="quiz-mode-badge exam">⏱️ בגרות מדומה</span>'
+    : '<span class="quiz-mode-badge practice">תרגול</span>';
+  document.getElementById('quizTitle').innerHTML = 'בוחן — ' + escapeHtml(unit ? unit.name : '') + modeBadge;
   renderQuizBody();
   document.getElementById('quizOverlay').classList.add('show');
+  if (examMode) {
+    examSecondsLeft = content.quiz.length * EXAM_SECONDS_PER_QUESTION;
+    updateExamTimerDisplay();
+    examTimerHandle = setInterval(() => {
+      examSecondsLeft--;
+      updateExamTimerDisplay();
+      if (examSecondsLeft <= 0) {
+        stopExamTimer();
+        alert('הזמן נגמר! הבוחן נשלח אוטומטית עם התשובות שסימנתם.');
+        submitQuiz(true);
+      }
+    }, 1000);
+  } else {
+    document.getElementById('quizTimer').textContent = '';
+  }
+}
+
+function updateExamTimerDisplay() {
+  const el = document.getElementById('quizTimer');
+  const m = Math.floor(examSecondsLeft / 60);
+  const s = examSecondsLeft % 60;
+  el.textContent = '⏱️ ' + m + ':' + String(s).padStart(2, '0');
+  el.className = 'quiz-timer' + (examSecondsLeft <= 30 ? ' danger' : examSecondsLeft <= 120 ? ' warn' : '');
+}
+
+function stopExamTimer() {
+  if (examTimerHandle) { clearInterval(examTimerHandle); examTimerHandle = null; }
 }
 
 function closeQuiz() {
+  stopExamTimer();
   document.getElementById('quizOverlay').classList.remove('show');
   currentQuiz = null;
 }
@@ -560,14 +607,18 @@ function selectQuizOpt(qi, oi) {
   qEl.querySelectorAll('.quiz-opt').forEach((btn, i) => btn.classList.toggle('selected', i === oi));
 }
 
-async function submitQuiz() {
+async function submitQuiz(auto) {
+  stopExamTimer();
   const total = currentQuiz.questions.length;
-  const unanswered = quizAnswers.findIndex(a => a === null);
-  if (unanswered !== -1) {
-    if (!confirm('יש שאלות בלי תשובה. לסיים בכל זאת?')) return;
+  if (!auto) {
+    const unanswered = quizAnswers.findIndex(a => a === null);
+    if (unanswered !== -1) {
+      if (!confirm('יש שאלות בלי תשובה. לסיים בכל זאת?')) return;
+    }
   }
 
   let score = 0;
+  const wrongNums = [];
   currentQuiz.questions.forEach((item, qi) => {
     const qEl = document.getElementById('quizQ' + qi);
     const opts = qEl.querySelectorAll('.quiz-opt');
@@ -578,14 +629,19 @@ async function submitQuiz() {
     });
     document.getElementById('quizExplain' + qi).classList.add('show');
     if (quizAnswers[qi] === item.correct) score++;
+    else wrongNums.push(qi + 1);
   });
 
   const body = document.getElementById('quizBody');
+  const reviewHtml = wrongNums.length
+    ? `<div class="quiz-review-list">כדאי לחזור על שאלות: <b>${wrongNums.join(', ')}</b></div>`
+    : `<div class="quiz-review-list">כל הכבוד — ענית נכון על כל השאלות! 🎉</div>`;
   const resultHtml = `
     <div class="quiz-result">
       <div class="quiz-result-score">${score} / ${total}</div>
       <div style="color:var(--muted);font-size:13px;">${Math.round(100 * score / total)}% הצלחה — נשמר בהתקדמות שלך</div>
     </div>
+    ${reviewHtml}
   `;
   body.insertAdjacentHTML('afterbegin', resultHtml);
   const footer = body.querySelector('.quiz-footer');
