@@ -156,6 +156,13 @@ Push דרך Firebase; PWA מלא (יש `manifest.json` בסיסי אבל push ל
 questions; `teacher/index.html` — עמודת "שאלות פתוחות" + מודל היסטוריה) אבל לא
 יעבוד בפועל עד ש-B יפרוס את 04.
 
+**05 — ייבוא רשימת תלמידים (`addBagrutStudentsBulk`) — ממתין לביצוע B, עצמאי
+מ-04 (אין תלות, אפשר בכל סדר).** תוספת קטנה וממוקדת (לא קובץ שלם): פונקציה חדשה
+ב-bagrut.gs שמקבלת מערך `students` ומוסיפה כל אחד תוך דילוג על כפילויות לפי
+מייל, + שורה ב-protectedActions + handlers. פרונטאנד כבר פרוס
+(`teacher/index.html` — כפתור "📋 ייבוא רשימה": הדבקת טווח מאקסל/Sheets
+(מזוהה טאב אוטומטית) או העלאת CSV) אבל לא יעבוד בפועל עד הפריסה.
+
 **הפרויקט**: `https://script.google.com/d/1ldbT0kIL8ghtOGrZWJ1xlcw0GJMQ_2rjJGXFpyLbI13vjU8pjzBnk7Pi/edit`
 (נגיש רק ל-B, לא לי — אני יכול לקרוא אותו כקובץ Drive עם
 `download_file_content` + `exportMimeType: application/vnd.google-apps.script+json`,
