@@ -100,8 +100,19 @@
 **סטטוס נוכחי (מאומת מהיומנים)**: 01 (דשבורד+ enrollment) ו-02 (בוט חומר לימוד,
 כולל תיקון Drive.Files.delete→remove ש-B מצא) **בוצעו במלואם ואומתו קצה-לקצה** —
 הבקאנד חי בפועל, הבוט עונה מהחומר האמיתי וממנע מידע חיצוני, knowledge_base מכיל
-35 קבצים סרוקים. 03 (הרחבת BAGRUT_UNITS ל-5 יחידות, אחרי שנוספו QUIZ_DATA לכל
-האזורים) — **ממתין לביצוע B**, שינוי חד-שורתי ממוקד.
+35 קבצים סרוקים.
+
+03 (הרחבת BAGRUT_UNITS ל-5 יחידות) **הוחלף על ידי 04** — אל תבצעו את 03 בנפרד,
+הוא כלול במלואו בתוך 04.
+
+**04 — שאלות פתוחות עם מעקב למורה + הרחבת יחידות — ממתין לביצוע B.** קובץ bagrut.gs
+שלם (מחליף את הקיים) + 2 תוספות ב-code.gs (protectedActions + handlers עבור
+`submitOpenAnswer` ו-`getBagrutStudentOpenAnswers`). מוסיף טאב גיליון חדש
+`open_answers` (email, name, unit_id, question, answer, feedback, timestamp) ומרחיב
+את `getBagrutTeacherDashboard` להחזיר `openAnswerCount` לכל תלמיד/ה. הפרונטאנד כבר
+מוכן ופרוס (`student/index.html` — כפתור "📝 שאלות פתוחות" לכל יחידה עם `open`
+questions; `teacher/index.html` — עמודת "שאלות פתוחות" + מודל היסטוריה) אבל לא
+יעבוד בפועל עד ש-B יפרוס את 04.
 
 **הפרויקט**: `https://script.google.com/d/1ldbT0kIL8ghtOGrZWJ1xlcw0GJMQ_2rjJGXFpyLbI13vjU8pjzBnk7Pi/edit`
 (נגיש רק ל-B, לא לי — אני יכול לקרוא אותו כקובץ Drive עם
