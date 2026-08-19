@@ -9,6 +9,23 @@
 </head>
 <body>
 
+<button class="sidebar-toggle" onclick="toggleSidebar(true)" aria-label="תפריט">☰</button>
+<div class="side-nav-overlay" id="sideNavOverlay" onclick="toggleSidebar(false)"></div>
+<nav class="side-nav" id="sideNav">
+  <div class="side-nav-head">
+    <span>🧭 מגמת תיירות</span>
+    <button class="side-nav-close" onclick="toggleSidebar(false)" aria-label="סגירה">✕</button>
+  </div>
+  <a href="index.html">בית</a>
+  <a href="musagim.html">מושגים</a>
+  <div class="side-nav-divider">פרקי לימוד</div>
+  <a href="hashivut.html">חשיבות התיירות</a>
+  <a href="yam-hamelach.html" class="active">ים המלח ומדבר יהודה</a>
+  <a href="haamakim.html">העמקים</a>
+  <a href="mishor-hachof.html">מישור החוף</a>
+  <a href="yerushalayim.html">ירושלים</a>
+</nav>
+
 <header class="site-header">
   <div class="header-inner">
     <div class="brand"><span class="emoji">🧭</span> מגמת תיירות · כיתה יא׳</div>
@@ -412,18 +429,31 @@ function enhanceReviewQuestionsWithOpenAnswer() {
   });
 }
 
+/* מציג משוב על תשובה פתוחה ישירות מתחת לתיבת הטקסט, בלי לפתוח את חלון הצ'אט */
+function showOpenAnswerFeedback(wrap, text, loading) {
+  let fb = wrap.querySelector('.open-answer-feedback');
+  if (!fb) {
+    fb = document.createElement('div');
+    fb.className = 'open-answer-feedback';
+    wrap.appendChild(fb);
+  }
+  fb.classList.toggle('loading', !!loading);
+  fb.classList.add('show');
+  fb.textContent = text;
+}
+
 async function checkReviewOpenAnswer(questionText, textarea) {
   const answer = textarea.value.trim();
   if (!answer) { textarea.focus(); return; }
-  toggleBotWidget(true);
-  appendBotMsg('user', 'זו התשובה שכתבתי: "' + answer + '"');
-  const pending = appendBotMsg('bot', '...בודק את התשובה, רגע');
+  const wrap = textarea.closest('.open-answer');
+  showOpenAnswerFeedback(wrap, '...בודק את התשובה, רגע', true);
   const checkPrompt = 'התלמיד/ה כתב/ה את התשובה הבאה לשאלת חזרה: "' + answer +
     '". ציינו בקצרה אילו חלקים מהשאלה כוסו במלואם, ואילו חלקים חסרים או חלקיים. לחלקים החסרים תנו רמז מכוון (לא את התשובה המלאה) שיעזור להשלים אותם בעצמם. אם הכל כבר מכוסה היטב, אמרו זאת ועודדו.';
   try {
-    pending.textContent = await callBagrutBot(checkPrompt, 'hint', questionText);
+    const reply = await callBagrutBot(checkPrompt, 'hint', questionText);
+    showOpenAnswerFeedback(wrap, reply, false);
   } catch (err) {
-    pending.textContent = 'שגיאה: ' + err.message;
+    showOpenAnswerFeedback(wrap, 'שגיאה: ' + err.message, false);
   }
 }
 enhanceReviewQuestionsWithOpenAnswer();
@@ -554,6 +584,13 @@ function renderGlossaryList(query) {
   list.innerHTML = terms.map(t => `<div class="gloss-item"><div class="gloss-term">${escapeHtmlGloss(t)}</div><div class="gloss-def">${escapeHtmlGloss(GLOSSARY[t])}</div></div>`).join('');
 }
 function escapeHtmlGloss(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+</script>
+
+<script>
+function toggleSidebar(open) {
+  document.getElementById('sideNav').classList.toggle('open', open);
+  document.getElementById('sideNavOverlay').classList.toggle('open', open);
+}
 </script>
 
 </body>

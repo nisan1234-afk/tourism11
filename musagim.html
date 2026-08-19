@@ -9,6 +9,23 @@
 </head>
 <body>
 
+<button class="sidebar-toggle" onclick="toggleSidebar(true)" aria-label="תפריט">☰</button>
+<div class="side-nav-overlay" id="sideNavOverlay" onclick="toggleSidebar(false)"></div>
+<nav class="side-nav" id="sideNav">
+  <div class="side-nav-head">
+    <span>🧭 מגמת תיירות</span>
+    <button class="side-nav-close" onclick="toggleSidebar(false)" aria-label="סגירה">✕</button>
+  </div>
+  <a href="index.html">בית</a>
+  <a href="musagim.html" class="active">מושגים</a>
+  <div class="side-nav-divider">פרקי לימוד</div>
+  <a href="hashivut.html">חשיבות התיירות</a>
+  <a href="yam-hamelach.html">ים המלח ומדבר יהודה</a>
+  <a href="haamakim.html">העמקים</a>
+  <a href="mishor-hachof.html">מישור החוף</a>
+  <a href="yerushalayim.html">ירושלים</a>
+</nav>
+
 <header class="site-header">
   <div class="header-inner">
     <div class="brand"><span class="emoji">🧭</span> מגמת תיירות · כיתה יא׳</div>
@@ -534,6 +551,13 @@ async function sendBotQuestion(e) {
     <button type="submit">שלח</button>
   </form>
 </div>
+
+<script>
+function toggleSidebar(open) {
+  document.getElementById('sideNav').classList.toggle('open', open);
+  document.getElementById('sideNavOverlay').classList.toggle('open', open);
+}
+</script>
 
 </body>
 </html>
