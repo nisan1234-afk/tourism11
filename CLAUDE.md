@@ -205,14 +205,18 @@ Push דרך Firebase; PWA מלא (יש `manifest.json` בסיסי אבל push ל
 03 (הרחבת BAGRUT_UNITS ל-5 יחידות) **הוחלף על ידי 04** — אל תבצעו את 03 בנפרד,
 הוא כלול במלואו בתוך 04.
 
-**04 — שאלות פתוחות עם מעקב למורה + הרחבת יחידות — ממתין לביצוע B.** קובץ bagrut.gs
-שלם (מחליף את הקיים) + 2 תוספות ב-code.gs (protectedActions + handlers עבור
-`submitOpenAnswer` ו-`getBagrutStudentOpenAnswers`). מוסיף טאב גיליון חדש
-`open_answers` (email, name, unit_id, question, answer, feedback, timestamp) ומרחיב
-את `getBagrutTeacherDashboard` להחזיר `openAnswerCount` לכל תלמיד/ה. הפרונטאנד כבר
-מוכן ופרוס (`student/index.html` — כפתור "📝 שאלות פתוחות" לכל יחידה עם `open`
-questions; `teacher/index.html` — עמודת "שאלות פתוחות" + מודל היסטוריה) אבל לא
-יעבוד בפועל עד ש-B יפרוס את 04.
+**04 — שאלות פתוחות עם מעקב למורה + הרחבת יחידות — בוצע במלואו על ידי B (Version 63,
+2026-08-19).** קובץ bagrut.gs שלם הוחלף (add-only: `ensureBagrutOpenAnswersSheet_`,
+`submitOpenAnswer`, `getBagrutStudentOpenAnswers`, והרחבת `getBagrutTeacherDashboard`
+ל-`openAnswerCount`) + 2 התוספות ב-code.gs (`protectedActions` + handlers) בוצעו
+add-only. נפרס דרך "New version" (לא "New deployment"), אותו deployment ID. B בדק
+רק ברמת ה-API (routing/auth תקין, אין קריסות) וסימן שהפרונטאנד "חסר" — זה לא מדויק:
+הפרונטאנד היה כבר מוכן ופרוס מקודם (`student/index.html` — כפתור "📝 שאלות פתוחות" עם
+`open` questions, קורא ל-`submitOpenAnswer`; `teacher/index.html` — עמודת "שאלות
+פתוחות" + מודל היסטוריה, קורא ל-`getBagrutStudentOpenAnswers`), ומצביע על אותו
+deployment ID בדיוק. כלומר התכונה **חיה עכשיו קצה-לקצה** בלי צורך בעבודה נוספת.
+בדיקת UI חיה בפועל (login אמיתי) עדיין לא בוצעה על ידי אף אחד — שווה לוודא בפעם
+הראשונה שתלמיד/ה משתמש/ת בזה.
 
 **05 — ייבוא רשימת תלמידים (`addBagrutStudentsBulk`) — ממתין לביצוע B, עצמאי
 מ-04 (אין תלות, אפשר בכל סדר).** תוספת קטנה וממוקדת (לא קובץ שלם): פונקציה חדשה
