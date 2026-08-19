@@ -283,4 +283,39 @@ checkTourismEnrollment_, tourism_bagrut: checkBagrutEnrollment_}` — כל מק�
 2. **`BAGRUT_UNITS` ב-`bagrut.gs`** — להוסיף `{unit_id, name, total_questions}`
    תואם (אותו `unit_id` כמו המפתח ב-`UNIT_CONTENT`). זו תוספת בקאנד, דורשת מעבר
    בתיקיית התיאום (B) + Deploy. בלי זה, היחידה קיימת בפרונט אבל לא תופיע בדשבורד
+
+## תיקוני UX (סרגל צדדי, משוב תשובות פתוחות, צבע אפור)
+
+שלושה תיקונים שהמשתמש ביקש יחד, פרונטאנד טהור, בוצעו ונדחפו ל-`main`:
+
+1. **סרגל צדדי (`.side-nav`)** — מחליף את `nav.main-nav` הישן (מוסתר עם
+   `display:none` ב-`style.css`, נשאר בקוד כגיבוי) בכל 7 עמודי האתר הציבוריים
+   (`index.html`, `musagim.html` וחמשת עמודי החבלים). כל עמוד קיבל: כפתור
+   `.sidebar-toggle` קבוע, `.side-nav-overlay`, ותג `<nav id="sideNav">` עם 7
+   קישורים (בית/מושגים + מפריד "פרקי לימוד" + 5 חבלים) ופונקציית JS
+   `toggleSidebar(open)` זהה בכל קובץ (בלי קובץ JS משותף — האתר לא בנוי כך).
+   בדסקטופ (`min-width:900px`) הסרגל קבוע וה-`body` מקבל `padding-right:268px`;
+   במובייל הוא נגלל עם overlay. `.gloss-toggle`/`.gloss-widget` (מילון צף) הוזזו
+   מ-bottom-right ל-bottom-left כדי לא להתנגש עם הסרגל.
+
+2. **משוב תשובות פתוחות בתוך העמוד** — `checkOpenAnswer` (ב-`haamakim.html`,
+   `mishor-hachof.html`, לתיבות `.bagrut-real`) ו-`checkReviewOpenAnswer` (בכל
+   5 עמודי החבלים, לשאלות `.qa` כלליות) כבר לא קוראות ל-`toggleBotWidget`/
+   `appendBotMsg` (חלון הצ'אט הצף). במקום זה, פונקציית עזר `showOpenAnswerFeedback(wrap,
+   text, loading)` (מוגדרת פעם אחת בכל קובץ, ליד `checkOpenAnswer`/
+   `checkReviewOpenAnswer`) יוצרת/מעדכנת `div.open-answer-feedback` בתוך אותו
+   `.open-answer` שמכיל את התיבה — כלומר המשוב מופיע ממש מתחת לתשובה שהתלמיד
+   כתב. עיצוב ה-CSS ב-`style.css` (ליד `.btn-check`). **חשוב**: הצ'אט החופשי
+   "שאלו אותי" (`sendBotQuestion`/`bot-toggle`) לא נגע — ממשיך להשתמש בחלון הצף
+   כרגיל, זה לא היה חלק מהתלונה.
+
+3. **צבע אפור לא קריא** — התלונה התייחסה ל-`--muted` (#6C7A8C, אפור-כחלחל שטוח)
+   בדשבורדים המגודרים (`student/`, `teacher/`) על רקע `--dark3` בהיר — לא
+   ל-`--ink-soft` (חום חמים) שמשמש בעמודים הציבוריים ל-`.q-explain`/
+   `details.qa .answer`, שנשאר ללא שינוי כי הוא כבר קריא ולא "אפור מכוער".
+   התיקון בוצע רק ב-`student/index.html`: `.quiz-explain` ו-`.open-q-feedback`
+   עברו מ-`color:var(--muted)` ל-`color:var(--text)` (כהה, קריא) + קו צבעוני
+   בצד (`border-inline-start`: טורקיז לחידונים, סגול לתשובות פתוחות).
+   `teacher/index.html` נבדק ולא שונה — שם `--muted` משמש רק לתוויות/מטא-דאטה
+   משניים (טבלאות, כפתורים), לא לתוכן משוב על תשובה, אז זה מחוץ להיקף התלונה.
    כי `getBagrutMyProgress`/`getBagrutTeacherDashboard` מחזירים רק את מה שרשום שם.
