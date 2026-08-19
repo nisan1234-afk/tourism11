@@ -111,9 +111,16 @@ Push דרך Firebase; PWA מלא (יש `manifest.json` בסיסי אבל push ל
   במצב תרגול רגיל) מופיע סיכום "כדאי לחזור על שאלות: X, Y..." לפי מספרי השאלות
   שטעו בהן. **לא בוצע**: פירוק לפי נושא/תת-אזור (אין תיוג נושא לכל שאלה ב-`QUIZ_DATA`
   הקיים) — הדוח הוא ברמת מספרי-שאלה, לא נושאים. עובד לגמרי בפרונטאנד, בלי B.
-- **טרם בוצע כלל** (שלבים 4–5 לפי סדר העדיפויות ב-CONTENT_GUIDE.md): מנגנון
-  "מה שכחתי" אישי (דורש מעקב תלמיד — הדשבורד הגדור; שלב 4), מפה אינטראקטיבית/
-  ציר זמן/ניחוש-מתמונה (שלב 5).
+- **שלב 4 — "מה שכחתי"**: פרונטאנד בוצע ב-`student/index.html`, **ממתין לביצוע B**
+  (מסמך 06 — עצמאי, לא תלוי ב-04/05). אחרי כל בוחן (תרגול/בגרות מדומה) נשלחת
+  תוצאה מפורטת לכל שאלה ל-`updateBagrutMistakes` (פעולה חדשה, לא נוגעת ב-
+  `saveBagrutQuizResult` הקיימת). שאלה שגויה נכנסת לטאב `mistakes` עם `correct_streak`;
+  אחרי 2 ניסיונות נכונים ברצף הופכת ל-`status: stable` ונעלמת מהרשימה. כפתור
+  "🧠 מה שכחתי (N)" מופיע על כרטיס יחידה רק אם יש שאלות `active` (`getBagrutMistakesSummary`),
+  ופותח בוחן קצר רק על השאלות האלה (`getBagrutMistakes`) — לא משפיע על `best_score`/
+  התקדמות היחידה הרגילה.
+- **טרם בוצע כלל** (שלב 5 לפי סדר העדיפויות ב-CONTENT_GUIDE.md): מפה אינטראקטיבית/
+  ציר זמן/ניחוש-מתמונה.
 
 `teacher/index.html` ו-`student/index.html` — דשבורד גדור (Google login) למקצוע
 "תיירות בגרות" בכיתה פלוס (ר' למטה).
@@ -167,6 +174,12 @@ questions; `teacher/index.html` — עמודת "שאלות פתוחות" + מו�
 מייל, + שורה ב-protectedActions + handlers. פרונטאנד כבר פרוס
 (`teacher/index.html` — כפתור "📋 ייבוא רשימה": הדבקת טווח מאקסל/Sheets
 (מזוהה טאב אוטומטית) או העלאת CSV) אבל לא יעבוד בפועל עד הפריסה.
+
+**06 — מנגנון "מה שכחתי" (`updateBagrutMistakes`/`getBagrutMistakes`/
+`getBagrutMistakesSummary`) — ממתין לביצוע B, עצמאי לגמרי (לא תלוי ב-04/05).**
+3 פונקציות חדשות + טאב גיליון חדש `mistakes` (email, unit_id, question_index,
+correct_streak, status, last_seen) — לא נוגע ב-`saveBagrutQuizResult` הקיימת בכלל.
+פרונטאנד כבר פרוס (`student/index.html`).
 
 **הפרויקט**: `https://script.google.com/d/1ldbT0kIL8ghtOGrZWJ1xlcw0GJMQ_2rjJGXFpyLbI13vjU8pjzBnk7Pi/edit`
 (נגיש רק ל-B, לא לי — אני יכול לקרוא אותו כקובץ Drive עם
