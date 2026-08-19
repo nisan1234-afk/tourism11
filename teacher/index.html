@@ -93,6 +93,14 @@
     .oa-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 8px; margin-bottom: 3px; }
     .oa-text { font-size: 13px; white-space: pre-wrap; }
     .oa-meta { font-size: 11px; color: var(--muted); margin-top: 8px; }
+
+    .bulk-hint { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 10px; }
+    .bulk-textarea { width: 100%; min-height: 140px; padding: 10px 13px; background: var(--dark3); border: 1px solid rgba(27,42,61,0.1); border-radius: 10px; color: var(--text); font-family: 'Heebo', sans-serif; font-size: 13px; outline: none; resize: vertical; direction: rtl; }
+    .bulk-file-row { margin-top: 10px; font-size: 12px; color: var(--muted); }
+    .bulk-result { font-size: 12px; margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: var(--dark3); display: none; }
+    .bulk-result.show { display: block; }
+    .bulk-result.success { color: var(--success); }
+    .bulk-result-errors { color: var(--error); margin-top: 6px; white-space: pre-wrap; }
   </style>
 </head>
 <body>
@@ -124,6 +132,7 @@
       <div class="card-title">תלמידים</div>
       <div style="display:flex;gap:8px;align-items:center;">
         <input class="search-input" type="text" placeholder="חיפוש..." oninput="filterStudents(this.value)" />
+        <button class="btn-sm btn-back" onclick="openBulkImportModal()">📋 ייבוא רשימה</button>
         <button class="btn-sm btn-primary" onclick="openAddModal()">+ הוסף תלמיד/ה</button>
       </div>
     </div>
@@ -168,6 +177,27 @@
     <div id="openAnswersBody"></div>
     <div class="modal-actions">
       <button class="btn-modal-cancel" onclick="hideOpenAnswersModal()">סגירה</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="bulkImportModal">
+  <div class="modal modal-wide">
+    <div class="modal-title">ייבוא רשימת תלמידים</div>
+    <div class="bulk-hint">
+      כל שורה = תלמיד/ה אחד/ת: <b>שם, מייל, כיתה</b> (הכיתה אופציונלית).<br>
+      הכי קל: סמנו טווח עמודות (שם/מייל/כיתה) באקסל או ב-Google Sheets, העתיקו (Ctrl+C),
+      והדביקו ישירות כאן — זה יזוהה אוטומטית. אפשר גם לבחור קובץ CSV.
+    </div>
+    <textarea class="bulk-textarea" id="bulkText" placeholder="דנה כהן&#9;dana@gmail.com&#9;יא'3&#10;יוסי לוי&#9;yossi@gmail.com&#9;יא'3"></textarea>
+    <div class="bulk-file-row">
+      או העלאת קובץ CSV: <input type="file" id="bulkFile" accept=".csv,text/csv" onchange="handleBulkFile(this)" />
+    </div>
+    <div class="modal-error" id="bulkModalError"></div>
+    <div class="bulk-result" id="bulkResult"></div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="hideBulkImportModal()">ביטול</button>
+      <button class="btn-modal-confirm" onclick="submitBulkImport()">ייבוא</button>
     </div>
   </div>
 </div>
@@ -311,6 +341,69 @@ function renderOpenAnswers(answers) {
 }
 
 function hideOpenAnswersModal() { document.getElementById('openAnswersModal').classList.remove('show'); }
+
+function openBulkImportModal() {
+  document.getElementById('bulkText').value = '';
+  document.getElementById('bulkFile').value = '';
+  document.getElementById('bulkModalError').textContent = '';
+  const resultEl = document.getElementById('bulkResult');
+  resultEl.className = 'bulk-result';
+  resultEl.innerHTML = '';
+  document.getElementById('bulkImportModal').classList.add('show');
+}
+function hideBulkImportModal() { document.getElementById('bulkImportModal').classList.remove('show'); }
+
+function handleBulkFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const textarea = document.getElementById('bulkText');
+    textarea.value = textarea.value.trim() ? textarea.value.trim() + '\n' + e.target.result : e.target.result;
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+function parseBulkStudents(text) {
+  return text.split(/\r?\n/).map(l => l.trim()).filter(Boolean).map(line => {
+    const parts = line.includes('\t') ? line.split('\t') : line.split(',');
+    return {
+      name: (parts[0] || '').trim(),
+      email: (parts[1] || '').trim(),
+      class_name: (parts[2] || '').trim()
+    };
+  });
+}
+
+async function submitBulkImport() {
+  const errEl = document.getElementById('bulkModalError');
+  const resultEl = document.getElementById('bulkResult');
+  errEl.textContent = '';
+  resultEl.className = 'bulk-result';
+  resultEl.innerHTML = '';
+
+  const text = document.getElementById('bulkText').value;
+  const students = parseBulkStudents(text);
+  if (!students.length) { errEl.textContent = 'לא נמצאו שורות לייבוא'; return; }
+
+  const invalidLines = [];
+  const validStudents = students.filter((s, i) => {
+    if (!s.name || !s.email) { invalidLines.push('שורה ' + (i + 1) + ': חסר שם או מייל, דולגה'); return false; }
+    return true;
+  });
+  if (!validStudents.length) { errEl.textContent = 'אף שורה לא הכילה שם ומייל תקינים'; return; }
+
+  try {
+    const data = await callAPI('addBagrutStudentsBulk', { students: validStudents });
+    const allErrors = invalidLines.concat(data.errors || []);
+    resultEl.className = 'bulk-result show success';
+    resultEl.innerHTML = `נוספו <b>${data.added}</b> תלמידים · דולגו <b>${data.skipped}</b> (כבר קיימים)` +
+      (allErrors.length ? `<div class="bulk-result-errors">${allErrors.map(escapeHtml).join('\n')}</div>` : '');
+    await loadData();
+  } catch (e) {
+    errEl.textContent = e.message;
+  }
+}
 
 function escapeHtml(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function escapeAttr(s) { return escapeHtml(s).replace(/`/g, '&#96;'); }
