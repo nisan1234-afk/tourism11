@@ -62,6 +62,31 @@ tourism11 הוא לא פרויקט מבודד — הוא מקצוע נוסף ב�
 רכיב תוצר/פרויקט — לא רלוונטי כרגע כי המודל אישי-תרגולי, לא פרויקטלי); התראות
 Push דרך Firebase; PWA מלא (יש `manifest.json` בסיסי אבל push לא נבדק/נבנה).
 
+## ריפו נוסף — jerusalem-tour (אתר כרטיסיות זיהוי-אתרים, מחובר להתקדמות)
+
+`https://nisan1234-afk.github.io/jerusalem-tour/` — ריפו GitHub נפרד (לא tourism11!),
+אתר "הפוך תמונה וגלה את שם האתר" עם **114 תמונות אמיתיות** שנסים כבר צילם/אסף,
+מכל 4 החבלים (לא רק ירושלים, למרות השם). זה בדיוק המקור שחסר ל"ניחוש מתמונה"
+(שלב 5 ב-CONTENT_GUIDE.md) — לא הומצא/חולץ ממצגת, המשתמש כבר הפנה אליו ישירות.
+
+**מצב נוכחי**: קיים ב-`/workspace/jerusalem-tour` (repo נפרד, push access יש —
+נדרש `add_repo` + `register_repo_root` בתחילת סשן חדש כדי לגשת אליו, הוא לא
+ברשימת ה-repos המקושרים כברירת מחדל). `index.html` שם עודכן: login-gate (משתמש
+ב-**אותו** `sessionStorage.kitahUser` — עובד אוטומטית כי `nisan1234-afk.github.io`
+הוא ה-origin המשותף גם ל-tourism11 וגם ל-jerusalem-tour, אין צורך בשום גישור
+מיוחד), ו-3 קריאות API חדשות (`getMySiteRecognition`/`saveSiteKnown`/
+`resetMySiteRecognition`) במקום localStorage בלבד (יש fallback ל-localStorage
+לרינדור מיידי + אם הרשת נכשלת).
+
+**חיבור לדשבורדים ב-tourism11** (נדחף): `student/index.html` — כרטיס קישור
+"🖼️ כרטיסיות זיהוי אתרים מתמונה" עם מונה חי X/114; `teacher/index.html` — עמודת
+טבלה "🖼️ זיהוי אתרים" עם אותו מונה לכל תלמיד/ה (`getBagrutSiteRecognitionSummary`).
+
+**07 — ממתין לביצוע B, עצמאי לגמרי (לא תלוי ב-04/05/06).** 4 פונקציות חדשות +
+טאב גיליון חדש `site_recognition` (email, site, region, known, last_seen) **באותו**
+`BAGRUT_SHEET_ID` הקיים — לא ריפו/גיליון נפרד. עד לפריסה, jerusalem-tour עדיין
+עובד (fallback ל-localStorage) אבל לא שומר/מציג התקדמות אמיתית.
+
 ## מבנה האתר
 
 ריפו סטטי, מוגש דרך `nisan1234-afk.github.io/tourism11/`. דפים: `index.html`,
