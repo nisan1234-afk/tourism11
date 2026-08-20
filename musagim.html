@@ -481,8 +481,8 @@ function renderQuiz() {
   document.getElementById('conceptQuizContainer').innerHTML = quizItems.map((item, qi) => `
     <div class="quiz-q" id="cq-${qi}">
       <div class="q-title">${qi + 1}. מהי ההגדרה הנכונה של "${item.term}"?</div>
-      <div class="q-opts">
-        ${item.opts.map((opt, oi) => `<button class="q-opt" onclick="selectConceptOpt(${qi}, ${oi})" id="cqopt-${qi}-${oi}">${opt}</button>`).join('')}
+      <div class="options">
+        ${item.opts.map((opt, oi) => `<button class="opt" onclick="selectConceptOpt(${qi}, ${oi})" id="cqopt-${qi}-${oi}">${opt}</button>`).join('')}
       </div>
     </div>`).join('');
 }
@@ -498,7 +498,7 @@ function checkConceptQuiz() {
       const btn = document.getElementById('cqopt-' + qi + '-' + oi);
       btn.disabled = true;
       if (oi === item.correct) btn.classList.add('correct');
-      else if (quizAnswers[qi] === oi) btn.classList.add('wrong');
+      else if (quizAnswers[qi] === oi) btn.classList.add('incorrect');
     });
     if (quizAnswers[qi] === item.correct) score++;
   });

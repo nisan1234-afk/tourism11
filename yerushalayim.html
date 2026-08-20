@@ -270,8 +270,8 @@ function buildQuiz() {
   container.innerHTML = QUIZ_DATA.map((item, qi) => `
     <div class="quiz-q" id="q-${qi}">
       <div class="q-title">${qi + 1}. ${item.q}</div>
-      <div class="q-opts">
-        ${item.opts.map((opt, oi) => `<button class="q-opt" onclick="selectOpt(${qi}, ${oi})" id="opt-${qi}-${oi}">${opt}</button>`).join('')}
+      <div class="options">
+        ${item.opts.map((opt, oi) => `<button class="opt" onclick="selectOpt(${qi}, ${oi})" id="opt-${qi}-${oi}">${opt}</button>`).join('')}
       </div>
       <div class="q-explain" id="explain-${qi}">${item.explain}</div>
     </div>
@@ -292,7 +292,7 @@ function checkQuiz() {
       const btn = document.getElementById('opt-' + qi + '-' + oi);
       btn.disabled = true;
       if (oi === item.correct) btn.classList.add('correct');
-      else if (answers[qi] === oi) btn.classList.add('wrong');
+      else if (answers[qi] === oi) btn.classList.add('incorrect');
     });
     if (answers[qi] === item.correct) score++;
     document.getElementById('explain-' + qi).classList.add('show');
