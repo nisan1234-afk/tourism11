@@ -82,10 +82,23 @@ Push דרך Firebase; PWA מלא (יש `manifest.json` בסיסי אבל push ל
 "🖼️ כרטיסיות זיהוי אתרים מתמונה" עם מונה חי X/114; `teacher/index.html` — עמודת
 טבלה "🖼️ זיהוי אתרים" עם אותו מונה לכל תלמיד/ה (`getBagrutSiteRecognitionSummary`).
 
+**שילוב "כחומר מן השורה" בעמודי החבלים עצמם** (נדחף): כל אחד מ-4 עמודי החבלים
+(`mishor-hachof.html`/`haamakim.html`/`yam-hamelach.html`/`yerushalayim.html`)
+כולל עכשיו סקציית "🖼️ זהו את האתר מהתמונה" עם **כל** תמונות האתרים של אותו חבל
+בלבד מתוך jerusalem-tour (107 סה"כ מפוצלים: 48/7/9/43 בהתאמה — הנתונים חולצו
+ישירות ממערך ה-`SITES` של jerusalem-tour/index.html, לא הומצאו). תמונות נטענות
+ב-`loading="lazy"` ישירות מ-`jerusalem-tour` (URL מוחלט, בלי להעתיק קבצים לריפו
+של tourism11). לחיצה על תמונה מגלה שם, כפתור "✓ אני יודע/ת" מסמן. **המנגנון
+משתמש באותו מפתח `localStorage` (`known_v3`) ובאותן פעולות בקאנד
+(`saveSiteKnown`/`getMySiteRecognition`) כמו jerusalem-tour עצמו** — כך שסימון
+מתוך עמוד תוכן מסתנכרן אוטומטית עם שני הדשבורדים, בלי מנגנון מעקב נפרד. בלי
+login, נשמר מקומית בלבד (כמו jerusalem-tour).
+
 **07 — ממתין לביצוע B, עצמאי לגמרי (לא תלוי ב-04/05/06).** 4 פונקציות חדשות +
 טאב גיליון חדש `site_recognition` (email, site, region, known, last_seen) **באותו**
-`BAGRUT_SHEET_ID` הקיים — לא ריפו/גיליון נפרד. עד לפריסה, jerusalem-tour עדיין
-עובד (fallback ל-localStorage) אבל לא שומר/מציג התקדמות אמיתית.
+`BAGRUT_SHEET_ID` הקיים — לא ריפו/גיליון נפרד. עד לפריסה, גם jerusalem-tour וגם
+הכרטיסיות המוטמעות בעמודי החבלים עדיין עובדים (fallback ל-localStorage) אבל לא
+שומרים/מציגים התקדמות אמיתית בדשבורדים.
 
 ## מבנה האתר
 
