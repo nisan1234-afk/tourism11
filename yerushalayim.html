@@ -202,6 +202,16 @@
 
   <p class="source-note">מבוסס על "מצגת ירושלים" (NotebookLM), תקציר אתרי ירושלים ופודקאסט מתוך חומרי מגמת התיירות, כיתה יא׳. לא נמצא קובץ ייעודי של שאלות בגרות אמיתיות לירושלים — לכן אין כאן תיבות "שאלת בגרות אמיתית", בהתאם לכלל שלא ממציאים תוכן.</p>
 
+  <div class="section">
+    <div class="section-title">🖼️ זהו את האתר מהתמונה</div>
+    <p style="color:var(--ink-soft);font-size:14px;margin-bottom:14px;">לחצו על תמונה כדי לגלות את שם האתר, וסמנו "✓ אני יודע/ת" לאתרים שאתם מזהים בביטחון. הסימון נשמר גם באתר כרטיסיות הזיהוי המלא.</p>
+    <div class="site-cards-head">
+      <div class="site-cards-count" id="siteCardsCount">0 / 43 ידועים</div>
+      <a class="btn-hint" href="https://nisan1234-afk.github.io/jerusalem-tour/" target="_blank">🖼️ לכל 114 האתרים באתר המלא</a>
+    </div>
+    <div class="site-cards-grid" id="siteCardsGrid"></div>
+  </div>
+
   <div class="section page-feedback">
     <div class="section-title">💬 יש לכם משוב על העמוד הזה?</div>
     <p style="color:var(--ink-soft);font-size:14px;margin-bottom:10px;">מצאתם טעות? יש הצעה לשיפור? משהו לא היה ברור? נשמח לשמוע ולתקן.</p>
@@ -369,6 +379,75 @@ async function callBagrutBot(question, mode, bagrutQuestion) {
   if (!data.ok) throw new Error(data.error);
   return data.data.reply;
 }
+
+/* ===== כרטיסיות זיהוי אתרים מתמונה (חומר מוטמע, מקורו באתר jerusalem-tour) ===== */
+const SITE_CARDS_REGION = "ירושלים";
+const SITE_CARDS = [{"site": "הקארדו", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image1.jpg"}, {"site": "בית כנסת החורבה", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image2.jpg"}, {"site": "הכותל המערבי", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image3.jpg"}, {"site": "מערת המכפלה", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image4.png"}, {"site": "כיפת הסלע", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image5.jpg"}, {"site": "כנסיית המולד", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image6.png"}, {"site": "כנסיית הביקור", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image7.png"}, {"site": "היכל הספר במוזיאון ישראל", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image8.jpg"}, {"site": "שוק מחנה יהודה", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image9.png"}, {"site": "הר הצופים", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image10.png"}, {"site": "כנסיית כל העמים", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image11.png"}, {"site": "גבעת התחמושת", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image12.png"}, {"site": "עיר דוד", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image13.jpg"}, {"site": "אקווריום ישראל", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image14.png"}, {"site": "בית המשפט העליון", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image15.png"}, {"site": "מדרחוב בן יהודה", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image16.png"}, {"site": "טיילת החומות", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image17.png"}, {"site": "נחלת שבעה", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image18.png"}, {"site": "מוזיאון הכנסת", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image20.png"}, {"site": "הספרייה הלאומית", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image22.png"}, {"site": "כנסיית הדמעה", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image23.png"}, {"site": "חדר הסעודה האחרונה (הסנקולום)", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image24.png"}, {"site": "מנזר לטרון", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image25.png"}, {"site": "כנסיית מריה מגדלנה (בצלים)", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image26.png"}, {"site": "הר הזיתים", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image27.png"}, {"site": "כנסיית הדורמיציון", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image28.png"}, {"site": "דרך הייסורים", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image29.png"}, {"site": "הכנסת", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image30.png"}, {"site": "קבר רחל", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image31.png"}, {"site": "יד אבשלום", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image32.png"}, {"site": "הר הרצל", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image33.png"}, {"site": "קבר דוד", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image35.png"}, {"site": "כנסיית העלייה לשמיים", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image36.png"}, {"site": "גן הקבר", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image37.png"}, {"site": "מנהרות הכותל", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image38.png"}, {"site": "ימין משה ומשכנות שאננים", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image39.png"}, {"site": "ארמון הנציב", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image40.png"}, {"site": "גן החיות התנ\"כי", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image41.png"}, {"site": "הרודיון", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image42.png"}, {"site": "יד לשיריון", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image43.png"}, {"site": "יד ושם", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image44.png"}, {"site": "מגדל דוד", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image45.jpg"}, {"site": "כנסיית הקבר", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image46.jpg"}];
+
+let siteCardsKnown = {};
+function loadSiteCardsKnown() {
+  try { siteCardsKnown = JSON.parse(localStorage.getItem('known_v3') || '{}'); } catch (e) { siteCardsKnown = {}; }
+}
+function saveSiteCardsKnownLocal() {
+  localStorage.setItem('known_v3', JSON.stringify(siteCardsKnown));
+}
+
+function renderSiteCards() {
+  const grid = document.getElementById('siteCardsGrid');
+  if (!grid) return;
+  const knownCount = SITE_CARDS.filter(s => siteCardsKnown[s.site]).length;
+  document.getElementById('siteCardsCount').textContent = knownCount + ' / ' + SITE_CARDS.length + ' ידועים';
+  grid.innerHTML = SITE_CARDS.map((item, i) => {
+    const isKnown = !!siteCardsKnown[item.site];
+    return '<div class="site-card' + (isKnown ? ' known' : '') + '">' +
+      '<div class="site-card-img" onclick="toggleSiteCardReveal(' + i + ')"><img src="' + item.img + '" loading="lazy" alt="' + item.site.replace(/"/g, '&quot;') + '"></div>' +
+      '<div class="site-card-name" id="siteCardName' + i + '" onclick="toggleSiteCardReveal(' + i + ')">❓ לחצו לגילוי</div>' +
+      '<button class="btn-hint site-card-know' + (isKnown ? ' is-known' : '') + '" type="button" onclick="toggleSiteKnown(' + i + ')">' + (isKnown ? '✅ ידוע' : '✓ אני יודע/ת') + '</button>' +
+    '</div>';
+  }).join('');
+}
+
+function toggleSiteCardReveal(i) {
+  const el = document.getElementById('siteCardName' + i);
+  const revealed = el.dataset.revealed === '1';
+  el.textContent = revealed ? '❓ לחצו לגילוי' : SITE_CARDS[i].site;
+  el.dataset.revealed = revealed ? '0' : '1';
+}
+
+async function toggleSiteKnown(i) {
+  const item = SITE_CARDS[i];
+  siteCardsKnown[item.site] = !siteCardsKnown[item.site];
+  saveSiteCardsKnownLocal();
+  renderSiteCards();
+  const stored = sessionStorage.getItem('kitahUser');
+  if (!stored) return;
+  try {
+    const user = JSON.parse(stored);
+    await fetch(BAGRUT_API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'saveSiteKnown', token: user.token, site: item.site, region: SITE_CARDS_REGION, known: siteCardsKnown[item.site] })
+    });
+  } catch (e) {}
+}
+
+async function syncSiteCardsFromServer() {
+  const stored = sessionStorage.getItem('kitahUser');
+  if (!stored) return;
+  try {
+    const user = JSON.parse(stored);
+    const res = await fetch(BAGRUT_API_URL, { method: 'POST', body: JSON.stringify({ action: 'getMySiteRecognition', token: user.token }) });
+    const data = await res.json();
+    if (data.ok) {
+      Object.assign(siteCardsKnown, data.data.known || {});
+      saveSiteCardsKnownLocal();
+      renderSiteCards();
+    }
+  } catch (e) {}
+}
+
+loadSiteCardsKnown();
+renderSiteCards();
+syncSiteCardsFromServer();
 
 /* ===== משוב עמוד + לוג שגיאות קליינט (fire-and-forget, לא חוסם UX) ===== */
 const BAGRUT_PAGE_ID = location.pathname.split('/').pop() || 'index.html';

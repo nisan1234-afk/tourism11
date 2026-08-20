@@ -440,6 +440,16 @@
 
   <p class="source-note">מבוסס על מצגת ומחוון "מישור החוף — חזרה לבגרות, מגמת תיירות" מתוך חומרי המורה.</p>
 
+  <div class="section">
+    <div class="section-title">🖼️ זהו את האתר מהתמונה</div>
+    <p style="color:var(--ink-soft);font-size:14px;margin-bottom:14px;">לחצו על תמונה כדי לגלות את שם האתר, וסמנו "✓ אני יודע/ת" לאתרים שאתם מזהים בביטחון. הסימון נשמר גם באתר כרטיסיות הזיהוי המלא.</p>
+    <div class="site-cards-head">
+      <div class="site-cards-count" id="siteCardsCount">0 / 48 ידועים</div>
+      <a class="btn-hint" href="https://nisan1234-afk.github.io/jerusalem-tour/" target="_blank">🖼️ לכל 114 האתרים באתר המלא</a>
+    </div>
+    <div class="site-cards-grid" id="siteCardsGrid"></div>
+  </div>
+
   <div class="section page-feedback">
     <div class="section-title">💬 יש לכם משוב על העמוד הזה?</div>
     <p style="color:var(--ink-soft);font-size:14px;margin-bottom:10px;">מצאתם טעות? יש הצעה לשיפור? משהו לא היה ברור? נשמח לשמוע ולתקן.</p>
@@ -612,6 +622,75 @@ async function callBagrutBot(question, mode, bagrutQuestion) {
   if (!data.ok) throw new Error(data.error);
   return data.data.reply;
 }
+
+/* ===== כרטיסיות זיהוי אתרים מתמונה (חומר מוטמע, מקורו באתר jerusalem-tour) ===== */
+const SITE_CARDS_REGION = "מישור-החוף";
+const SITE_CARDS = [{"site": "גן לאומי קיסריה", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image57.png"}, {"site": "קיסריה – האקוודוקט", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image58.png"}, {"site": "קיסריה – נמל", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image59.png"}, {"site": "קיסריה – התיאטרון הרומי", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image60.png"}, {"site": "קיסריה – השער הצלבני", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image61.png"}, {"site": "יפו העתיקה", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image62.png"}, {"site": "כנסיית פטרוס הקדוש", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image63.png"}, {"site": "נמל יפו", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image64.png"}, {"site": "מסגד חסן בק", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image65.png"}, {"site": "שוק הכרמל", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image66.png"}, {"site": "שוק הפשפשים", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image67.png"}, {"site": "מוזיאון הפלמ\"ח", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image68.png"}, {"site": "שרונה", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image69.png"}, {"site": "שוק לוינסקי", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image70.png"}, {"site": "מדרחוב נחלת בנימין", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image71.png"}, {"site": "מתחם התחנה", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image72.png"}, {"site": "פארק הירקון", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image73.png"}, {"site": "כיכר דיזינגוף", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image74.png"}, {"site": "נמל ת\"א", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image75.png"}, {"site": "מרכז רבין", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image77.png"}, {"site": "מרכז פרס לשלום", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image78.png"}, {"site": "כיכר קדומים (יפו)", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image79.png"}, {"site": "מרכז סוזן דלל, שכונת נווה צדק", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image80.png"}, {"site": "מוזיאון ארץ ישראל", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image81.png"}, {"site": "מגדל השעון ביפו", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image82.png"}, {"site": "מסגד מחמודיה", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image83.png"}, {"site": "מוזיאון אנו (בית התפוצות לשעבר)", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image84.png"}, {"site": "מסגד אל ג'זאר עכו", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image85.png"}, {"site": "חאן אל עומדן – עכו", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image86.png"}, {"site": "אולמות האבירים בעכו", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image87.png"}, {"site": "בית לוחמי הגטאות", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image88.png"}, {"site": "המונפורט", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image89.png"}, {"site": "מצודת יחיעם", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image90.png"}, {"site": "עכו העתיקה", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image91.png"}, {"site": "בית אהרונסון", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image92.png"}, {"site": "יקבי זכרון יעקב", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image93.png"}, {"site": "רמת הנדיב", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image94.png"}, {"site": "מערת אליהו הנביא", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image95.png"}, {"site": "המוחרקה מנזר כרמליתי", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image96.png"}, {"site": "הבהג'י בעכו", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image97.png"}, {"site": "הגנים הבאהיים בחיפה", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image98.jpg"}, {"site": "ראש הנקרה", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image100.jpg"}, {"site": "שמורת נחל בצת", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image101.png"}, {"site": "פארק אכזיב", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image102.png"}, {"site": "נחל אלכסנדר", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image103.png"}, {"site": "גן לאומי אשקלון", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image104.png"}, {"site": "מערות בית גוברין", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image105.png"}, {"site": "מערת הנטיפים", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image106.png"}];
+
+let siteCardsKnown = {};
+function loadSiteCardsKnown() {
+  try { siteCardsKnown = JSON.parse(localStorage.getItem('known_v3') || '{}'); } catch (e) { siteCardsKnown = {}; }
+}
+function saveSiteCardsKnownLocal() {
+  localStorage.setItem('known_v3', JSON.stringify(siteCardsKnown));
+}
+
+function renderSiteCards() {
+  const grid = document.getElementById('siteCardsGrid');
+  if (!grid) return;
+  const knownCount = SITE_CARDS.filter(s => siteCardsKnown[s.site]).length;
+  document.getElementById('siteCardsCount').textContent = knownCount + ' / ' + SITE_CARDS.length + ' ידועים';
+  grid.innerHTML = SITE_CARDS.map((item, i) => {
+    const isKnown = !!siteCardsKnown[item.site];
+    return '<div class="site-card' + (isKnown ? ' known' : '') + '">' +
+      '<div class="site-card-img" onclick="toggleSiteCardReveal(' + i + ')"><img src="' + item.img + '" loading="lazy" alt="' + item.site.replace(/"/g, '&quot;') + '"></div>' +
+      '<div class="site-card-name" id="siteCardName' + i + '" onclick="toggleSiteCardReveal(' + i + ')">❓ לחצו לגילוי</div>' +
+      '<button class="btn-hint site-card-know' + (isKnown ? ' is-known' : '') + '" type="button" onclick="toggleSiteKnown(' + i + ')">' + (isKnown ? '✅ ידוע' : '✓ אני יודע/ת') + '</button>' +
+    '</div>';
+  }).join('');
+}
+
+function toggleSiteCardReveal(i) {
+  const el = document.getElementById('siteCardName' + i);
+  const revealed = el.dataset.revealed === '1';
+  el.textContent = revealed ? '❓ לחצו לגילוי' : SITE_CARDS[i].site;
+  el.dataset.revealed = revealed ? '0' : '1';
+}
+
+async function toggleSiteKnown(i) {
+  const item = SITE_CARDS[i];
+  siteCardsKnown[item.site] = !siteCardsKnown[item.site];
+  saveSiteCardsKnownLocal();
+  renderSiteCards();
+  const stored = sessionStorage.getItem('kitahUser');
+  if (!stored) return;
+  try {
+    const user = JSON.parse(stored);
+    await fetch(BAGRUT_API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'saveSiteKnown', token: user.token, site: item.site, region: SITE_CARDS_REGION, known: siteCardsKnown[item.site] })
+    });
+  } catch (e) {}
+}
+
+async function syncSiteCardsFromServer() {
+  const stored = sessionStorage.getItem('kitahUser');
+  if (!stored) return;
+  try {
+    const user = JSON.parse(stored);
+    const res = await fetch(BAGRUT_API_URL, { method: 'POST', body: JSON.stringify({ action: 'getMySiteRecognition', token: user.token }) });
+    const data = await res.json();
+    if (data.ok) {
+      Object.assign(siteCardsKnown, data.data.known || {});
+      saveSiteCardsKnownLocal();
+      renderSiteCards();
+    }
+  } catch (e) {}
+}
+
+loadSiteCardsKnown();
+renderSiteCards();
+syncSiteCardsFromServer();
 
 /* ===== משוב עמוד + לוג שגיאות קליינט (fire-and-forget, לא חוסם UX) ===== */
 const BAGRUT_PAGE_ID = location.pathname.split('/').pop() || 'index.html';

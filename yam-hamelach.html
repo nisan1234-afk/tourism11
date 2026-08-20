@@ -236,6 +236,16 @@
 
   <p class="source-note">מבוסס על מצגת "מסע אל ים המלח ומדבר יהודה" (NotebookLM) וחוברת הלימוד המסכמת של מגמת התיירות אלוני הבשן, כיתה יא׳. לא נמצא קובץ ייעודי של שאלות בגרות אמיתיות לאזור זה — לכן אין כאן תיבות "שאלת בגרות אמיתית", בהתאם לכלל שלא ממציאים תוכן.</p>
 
+  <div class="section">
+    <div class="section-title">🖼️ זהו את האתר מהתמונה</div>
+    <p style="color:var(--ink-soft);font-size:14px;margin-bottom:14px;">לחצו על תמונה כדי לגלות את שם האתר, וסמנו "✓ אני יודע/ת" לאתרים שאתם מזהים בביטחון. הסימון נשמר גם באתר כרטיסיות הזיהוי המלא.</p>
+    <div class="site-cards-head">
+      <div class="site-cards-count" id="siteCardsCount">0 / 9 ידועים</div>
+      <a class="btn-hint" href="https://nisan1234-afk.github.io/jerusalem-tour/" target="_blank">🖼️ לכל 114 האתרים באתר המלא</a>
+    </div>
+    <div class="site-cards-grid" id="siteCardsGrid"></div>
+  </div>
+
   <div class="section page-feedback">
     <div class="section-title">💬 יש לכם משוב על העמוד הזה?</div>
     <p style="color:var(--ink-soft);font-size:14px;margin-bottom:10px;">מצאתם טעות? יש הצעה לשיפור? משהו לא היה ברור? נשמח לשמוע ולתקן.</p>
@@ -403,6 +413,75 @@ async function callBagrutBot(question, mode, bagrutQuestion) {
   if (!data.ok) throw new Error(data.error);
   return data.data.reply;
 }
+
+/* ===== כרטיסיות זיהוי אתרים מתמונה (חומר מוטמע, מקורו באתר jerusalem-tour) ===== */
+const SITE_CARDS_REGION = "ים-המלח";
+const SITE_CARDS = [{"site": "נבי מוסא", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image48.png"}, {"site": "מנזר קרנטל", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image49.jpg"}, {"site": "מפעל אהבה", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image50.jpg"}, {"site": "קאסר אל יהוד", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image51.png"}, {"site": "מצדה", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image52.png"}, {"site": "בית הכנסת העתיק בעין גדי", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image53.png"}, {"site": "מערות קומראן", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image54.png"}, {"site": "הר סדום", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image55.png"}, {"site": "ים המלח", "img": "https://nisan1234-afk.github.io/jerusalem-tour/images/image56.jpg"}];
+
+let siteCardsKnown = {};
+function loadSiteCardsKnown() {
+  try { siteCardsKnown = JSON.parse(localStorage.getItem('known_v3') || '{}'); } catch (e) { siteCardsKnown = {}; }
+}
+function saveSiteCardsKnownLocal() {
+  localStorage.setItem('known_v3', JSON.stringify(siteCardsKnown));
+}
+
+function renderSiteCards() {
+  const grid = document.getElementById('siteCardsGrid');
+  if (!grid) return;
+  const knownCount = SITE_CARDS.filter(s => siteCardsKnown[s.site]).length;
+  document.getElementById('siteCardsCount').textContent = knownCount + ' / ' + SITE_CARDS.length + ' ידועים';
+  grid.innerHTML = SITE_CARDS.map((item, i) => {
+    const isKnown = !!siteCardsKnown[item.site];
+    return '<div class="site-card' + (isKnown ? ' known' : '') + '">' +
+      '<div class="site-card-img" onclick="toggleSiteCardReveal(' + i + ')"><img src="' + item.img + '" loading="lazy" alt="' + item.site.replace(/"/g, '&quot;') + '"></div>' +
+      '<div class="site-card-name" id="siteCardName' + i + '" onclick="toggleSiteCardReveal(' + i + ')">❓ לחצו לגילוי</div>' +
+      '<button class="btn-hint site-card-know' + (isKnown ? ' is-known' : '') + '" type="button" onclick="toggleSiteKnown(' + i + ')">' + (isKnown ? '✅ ידוע' : '✓ אני יודע/ת') + '</button>' +
+    '</div>';
+  }).join('');
+}
+
+function toggleSiteCardReveal(i) {
+  const el = document.getElementById('siteCardName' + i);
+  const revealed = el.dataset.revealed === '1';
+  el.textContent = revealed ? '❓ לחצו לגילוי' : SITE_CARDS[i].site;
+  el.dataset.revealed = revealed ? '0' : '1';
+}
+
+async function toggleSiteKnown(i) {
+  const item = SITE_CARDS[i];
+  siteCardsKnown[item.site] = !siteCardsKnown[item.site];
+  saveSiteCardsKnownLocal();
+  renderSiteCards();
+  const stored = sessionStorage.getItem('kitahUser');
+  if (!stored) return;
+  try {
+    const user = JSON.parse(stored);
+    await fetch(BAGRUT_API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'saveSiteKnown', token: user.token, site: item.site, region: SITE_CARDS_REGION, known: siteCardsKnown[item.site] })
+    });
+  } catch (e) {}
+}
+
+async function syncSiteCardsFromServer() {
+  const stored = sessionStorage.getItem('kitahUser');
+  if (!stored) return;
+  try {
+    const user = JSON.parse(stored);
+    const res = await fetch(BAGRUT_API_URL, { method: 'POST', body: JSON.stringify({ action: 'getMySiteRecognition', token: user.token }) });
+    const data = await res.json();
+    if (data.ok) {
+      Object.assign(siteCardsKnown, data.data.known || {});
+      saveSiteCardsKnownLocal();
+      renderSiteCards();
+    }
+  } catch (e) {}
+}
+
+loadSiteCardsKnown();
+renderSiteCards();
+syncSiteCardsFromServer();
 
 /* ===== משוב עמוד + לוג שגיאות קליינט (fire-and-forget, לא חוסם UX) ===== */
 const BAGRUT_PAGE_ID = location.pathname.split('/').pop() || 'index.html';

@@ -701,6 +701,19 @@ footer.site-footer {
 .feedback-thanks { display: none; margin-top: 2px; font-size: 13px; color: var(--teal-dark); font-weight: 700; }
 .feedback-thanks.show { display: block; }
 
+/* ===== כרטיסיות זיהוי אתרים מתמונה (חומר מוטמע, מקורו באתר jerusalem-tour) ===== */
+.site-cards-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+.site-cards-count { font-size: 13px; font-weight: 700; color: var(--teal-dark); background: rgba(14,124,123,0.1); padding: 6px 14px; border-radius: 20px; }
+.site-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.site-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column; transition: border-color 0.2s var(--ease); }
+.site-card.known { border-color: var(--teal); }
+.site-card-img { width: 100%; aspect-ratio: 4/3; background: var(--sand-2); cursor: pointer; overflow: hidden; }
+.site-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.site-card-name { padding: 8px 10px; font-size: 12.5px; font-weight: 600; color: var(--ink); text-align: center; min-height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.site-card-know { margin: 0 8px 8px; border-color: var(--terracotta); color: var(--terracotta); background: rgba(193,98,45,0.07); font-size: 12px; padding: 6px 10px; }
+.site-card-know:hover { background: var(--terracotta); color: #fff; }
+.site-card-know.is-known { border-color: var(--teal-dark); color: #fff; background: var(--teal-dark); }
+
 .bot-toggle {
   position: fixed; bottom: 22px; left: 22px; z-index: 500;
   display: flex; align-items: center; gap: 8px; padding: 12px 18px;
