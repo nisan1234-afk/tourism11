@@ -231,6 +231,17 @@ deployment ID בדיוק. כלומר התכונה **חיה עכשיו קצה-ל�
 correct_streak, status, last_seen) — לא נוגע ב-`saveBagrutQuizResult` הקיימת בכלל.
 פרונטאנד כבר פרוס (`student/index.html`).
 
+**08 — לוג שגיאות לקוח + משוב תלמידים בעמודי התוכן (`submitPageFeedback`/
+`logClientError`) — ממתין לביצוע B, עצמאי לגמרי.** 2 פעולות **פתוחות** (בלי
+login, כמו `askBagrutBot` — לא נכנסות ל-`protectedActions`, רק ל-handlers) +
+2 טאבי גיליון חדשים: `page_feedback` (page, name, feedback, timestamp) ו-
+`error_log` (page, message, context, timestamp). פרונטאנד כבר פרוס בכל 7
+עמודי התוכן הציבוריים: תיבת "💬 יש לכם משוב על העמוד הזה?" בתחתית כל עמוד
+(`submitPageFeedback`), ו-listener גלובלי `window.onerror`/`unhandledrejection`
+שמדווח שגיאות JS לא-מטופלות אוטומטית (`logClientError`, fire-and-forget, לא
+חוסם UX). אין עדיין מסך ריכוז בדשבורד — קריאה ישירה מהגיליון (`BAGRUT_SHEET_ID`)
+בינתיים.
+
 **הפרויקט**: `https://script.google.com/d/1ldbT0kIL8ghtOGrZWJ1xlcw0GJMQ_2rjJGXFpyLbI13vjU8pjzBnk7Pi/edit`
 (נגיש רק ל-B, לא לי — אני יכול לקרוא אותו כקובץ Drive עם
 `download_file_content` + `exportMimeType: application/vnd.google-apps.script+json`,
