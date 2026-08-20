@@ -178,6 +178,19 @@
 
   <p class="source-note">מבוסס על מצגות ומסמכי "חשיבותה של התיירות לישראל" (גדית סדן; מערכת השידורים הלאומית, ניר לוינסון) מתוך חומרי המורה.</p>
 
+  <div class="section page-feedback">
+    <div class="section-title">💬 יש לכם משוב על העמוד הזה?</div>
+    <p style="color:var(--ink-soft);font-size:14px;margin-bottom:10px;">מצאתם טעות? יש הצעה לשיפור? משהו לא היה ברור? נשמח לשמוע ולתקן.</p>
+    <div class="feedback-form">
+      <textarea class="feedback-textarea" id="feedbackText" placeholder="כתבו כאן את המשוב שלכם..."></textarea>
+      <div class="feedback-row">
+        <input type="text" class="feedback-name-input" id="feedbackName" placeholder="שם (לא חובה)">
+        <button class="btn-hint" type="button" onclick="submitPageFeedback()">📮 שליחת משוב</button>
+      </div>
+      <div class="feedback-thanks" id="feedbackThanks"></div>
+    </div>
+  </div>
+
 </main>
 
 <footer class="site-footer">
@@ -284,6 +297,43 @@ async function callBagrutBot(question, mode, bagrutQuestion) {
   const data = await res.json();
   if (!data.ok) throw new Error(data.error);
   return data.data.reply;
+}
+
+/* ===== משוב עמוד + לוג שגיאות קליינט (fire-and-forget, לא חוסם UX) ===== */
+const BAGRUT_PAGE_ID = location.pathname.split('/').pop() || 'index.html';
+
+function logClientError_(message, context) {
+  try {
+    fetch(BAGRUT_API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'logClientError', page: BAGRUT_PAGE_ID, message: String(message).slice(0, 500), context: String(context || '').slice(0, 500) })
+    }).catch(function(){});
+  } catch (e) {}
+}
+window.addEventListener('error', function(e) { logClientError_(e.message, (e.filename || '') + ':' + (e.lineno || '')); });
+window.addEventListener('unhandledrejection', function(e) { logClientError_('unhandledrejection: ' + ((e.reason && e.reason.message) || e.reason), ''); });
+
+async function submitPageFeedback() {
+  const textEl = document.getElementById('feedbackText');
+  const nameEl = document.getElementById('feedbackName');
+  const thanksEl = document.getElementById('feedbackThanks');
+  const feedback = textEl.value.trim();
+  if (!feedback) { textEl.focus(); return; }
+  try {
+    const res = await fetch(BAGRUT_API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'submitPageFeedback', page: BAGRUT_PAGE_ID, feedback, name: nameEl.value.trim() })
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error);
+    textEl.value = '';
+    nameEl.value = '';
+    thanksEl.textContent = 'תודה! המשוב נשלח 🙌';
+    thanksEl.classList.add('show');
+  } catch (e) {
+    thanksEl.textContent = 'שגיאה בשליחה: ' + e.message;
+    thanksEl.classList.add('show');
+  }
 }
 function toggleBotWidget(open) { document.getElementById('botWidget').classList.toggle('open', open); }
 function appendBotMsg(role, text) {

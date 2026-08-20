@@ -683,6 +683,24 @@ footer.site-footer {
 .open-answer-feedback.show { display: block; }
 .open-answer-feedback.loading { color: var(--ink-soft); font-style: italic; border-right-color: var(--gold); }
 
+/* ===== משוב תלמידים בתחתית עמוד ===== */
+.feedback-form { display: flex; flex-direction: column; gap: 10px; margin-top: 6px; }
+.feedback-textarea {
+  width: 100%; min-height: 80px; padding: 10px 12px; border-radius: 10px;
+  border: 1px solid rgba(14,124,123,0.25); background: #fff; color: var(--ink);
+  font-family: inherit; font-size: 14px; resize: vertical;
+}
+.feedback-textarea:focus { outline: none; border-color: var(--teal); }
+.feedback-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.feedback-name-input {
+  flex: 1; min-width: 160px; max-width: 240px; padding: 8px 12px; border-radius: 10px;
+  border: 1px solid rgba(14,124,123,0.25); background: #fff; color: var(--ink);
+  font-family: inherit; font-size: 13px;
+}
+.feedback-name-input:focus { outline: none; border-color: var(--teal); }
+.feedback-thanks { display: none; margin-top: 2px; font-size: 13px; color: var(--teal-dark); font-weight: 700; }
+.feedback-thanks.show { display: block; }
+
 .bot-toggle {
   position: fixed; bottom: 22px; left: 22px; z-index: 500;
   display: flex; align-items: center; gap: 8px; padding: 12px 18px;
